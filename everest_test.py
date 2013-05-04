@@ -2,18 +2,60 @@ import unittest
 import everest
 import json
 
-class FlaskrTestCase(unittest.TestCase):
-    def setUp(self):
+class RouteTestCase(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
         self.app = everest.app.test_client()
 
-    def tearDown(self):
-        pass
+        expected = ''.join(json.dumps({ 'source': 30000142, 'destination': 30002510 }).split())
+        self.data = [{
+                'url': '/route/%d/%d/' % (30000142, 30002510),
+                'expected': expected
+            }, {
+                'url': '/route/%s/%s/' % ('Jita', 'Rens'),
+                'expected': expected
+            }, {
+                'url': '/route/%s/%d/' % ('Jita', 30002510),
+                'expected': expected
+            }, {
+                'url': '/route/%d/%s/' % (30000142, 'Rens'),
+                'expected': expected
+            }]
 
-    def test_route(self):
-        expected = ''.join(json.dumps({ 'source': 60003469, 'destination': 60003469 }).split())
-        response = self.app.get('/route/%d/%d/' % (60003469, 60003469))
-        result = ''.join(response.data.split())
-        assert result == expected
+    def runTest(self):
+        for test in self.data:
+            response = self.app.get(test['url'])
+            result = ''.join(response.data.split())
+            self.assertEquals(test['expected'], result, test['url'])
+
+class RouteStationTestCase(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        self.app = everest.app.test_client()
+
+        expected = ''.join(json.dumps({ 'source': 30000142, 'destination': 30002510 }).split())
+        self.data = [{
+                'url': '/route/station/%d/%d/' % (60003469, 60004588),
+                'expected': expected
+            }, {
+                'url': '/route/station/%s/%s/' % ('Jita IV - Caldari Business Tribunal Information Center', 'Rens VI - Moon 8 - Brutor Tribe Treasury'),
+                'expected': expected
+            }, {
+                'url': '/route/station/%s/%d/' % ('Jita IV - Caldari Business Tribunal Information Center', 60004588),
+                'expected': expected
+            }, {
+                'url': '/route/station/%d/%s/' % (60003469, 'Rens VI - Moon 8 - Brutor Tribe Treasury'),
+                'expected': expected
+            }]
+
+    def runTest(self):
+        for test in self.data:
+            response = self.app.get(test['url'])
+            result = ''.join(response.data.split())
+            self.assertEquals(test['expected'], result, test['url'])
 
 if __name__ == '__main__':
-    unittest.main()
+    suite = unittest.TestSuite()
+    suite.addTest(RouteTestCase())
+    suite.addTest(RouteStationTestCase())
+    unittest.TextTestRunner(verbosity=2).run(suite)
