@@ -13,3 +13,18 @@ def close_db(app):
     top = _app_ctx_stack.top
     if hasattr(top, 'mysql_db'):
         top.mysql_db.close()
+
+# Issues a query that is supposed to return exactly one row.
+# LookupError exception is thrown if the query returns 0 items and a log warning
+# is written if more than one is returned. In that case, the first row is returned.
+def get_one(query, params):
+    db = get_db(app)
+    c = db.cursor()
+    count = c.execute(query, params)
+
+    if count == 0:
+        raise LookupError
+    elif count > 1:
+        app.logger.warning('Query count %d for query <%s>' % (count, query))
+
+    return c.fetchone()
