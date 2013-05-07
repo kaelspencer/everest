@@ -18,19 +18,11 @@ def handleLookupError(f):
 
 @app.route('/')
 def index():
-    db = get_db(app)
-    c = db.cursor()
-    c.execute('select solarSystemName from mapSolarSystems limit 10')
-
-    columns = [desc[0] for desc in c.description]
-    result = []
-    rows = c.fetchall()
-
-    for row in rows:
-        row = dict(zip(columns, row))
-        result.append(row)
-
-    return Response(json.dumps(result), mimetype='application/json')
+    usage = {
+        'route': 'Use /route/<from>/<to>/ for systems and /route/station/<from>/<to>/ for stations to get route information.',
+        'jump': 'Use /jump/<from>/<to>/ for systems and /route/station/<from>/<to>/ for stations to get a jump count.'
+    }
+    return jsonify(name='everest', github='https://github.com/kaelspencer/everest', author='Kael Spencer', usage=usage)
 
 # This set of methods handles the routes. Ints are needed, but strings can be supplied.
 # The route method is appended with two letters that describe the type of parameters.
