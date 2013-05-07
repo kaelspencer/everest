@@ -2,7 +2,7 @@ from app import app
 from db import get_db
 from flask import abort, Response, jsonify
 from functools import wraps
-from helpers import sys_to_id, sta_to_sysid, staid_to_sysid
+from helpers import sys_to_id, sta_to_sysid, staid_to_sysid, sysid_list_to_object
 from graph import SystemGraph
 import json
 
@@ -36,7 +36,11 @@ def index():
 # The route method is appended with two letters that describe the type of parameters.
 @app.route('/route/<int:source>/<int:destination>/')
 def route_ii(source, destination):
-    return jsonify(source=source, destination=destination)
+    g = SystemGraph()
+    route = g.route(source, destination)
+    route = sysid_list_to_object(route)
+    count = len(route) - 1
+    return jsonify(route=route, count=count)
 
 @app.route('/route/<source>/<int:destination>/')
 @handleLookupError
@@ -92,11 +96,7 @@ def route_station_ss(source, destination):
 def jump_ii(source, destination):
     g = SystemGraph()
     jumps = g.distance(source, destination)
-
-    if jumps >= 0:
-        return jsonify(jumps=jumps)
-    else:
-        abort(404)
+    return jsonify(jumps=jumps)
 
 @app.route('/jump/<source>/<int:destination>/')
 @handleLookupError
@@ -145,9 +145,3 @@ def jump_station_ss(source, destination):
     sysid_source = sta_to_sysid(source)
     sysid_destination = sta_to_sysid(destination)
     return jump_ii(sysid_source, sysid_destination)
-
-@app.route('/test')
-def test():
-    g = SystemGraph()
-    print g.distance(30000142, 30002510)
-    return ''

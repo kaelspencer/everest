@@ -15,3 +15,15 @@ def sta_to_sysid(station):
 def staid_to_sysid(station):
     row = get_one('select solarSystemId from eve.staStations where stationID = %(station)s', { 'station': station })
     return row[0]
+
+# Converts a list of system IDs to system objects.
+def sysid_list_to_object(sysids):
+    objs = []
+    for sys in sysids:
+        objs.append(sysid_to_object(sys))
+    return objs
+
+# Converts a system ID to a system object.
+def sysid_to_object(sysid):
+    row = get_one('select solarSystemID, solarSystemName from eve.mapSolarSystems where solarSystemID = %(system)s', { 'system': sysid })
+    return { 'id': row[0], 'name': row[1] }
