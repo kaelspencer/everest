@@ -28,3 +28,10 @@ def get_one(query, params):
         app.logger.warning('Query count %d for query <%s>' % (count, query))
 
     return c.fetchone()
+
+# Issues a query and returns all results.
+def get_all(query, params):
+    db = get_db(app)
+    c = db.cursor()
+    c.execute(query, params)
+    return c.fetchall()
