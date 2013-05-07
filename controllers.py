@@ -20,7 +20,7 @@ def handleLookupError(f):
 def index():
     db = get_db(app)
     c = db.cursor()
-    c.execute('select solarSystemName from eve.mapSolarSystems limit 10')
+    c.execute('select solarSystemName from mapSolarSystems limit 10')
 
     columns = [desc[0] for desc in c.description]
     result = []

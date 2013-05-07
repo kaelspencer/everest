@@ -4,4 +4,6 @@ MySQL-python==1.2.4
 Werkzeug==0.8.3
 argparse==1.2.1
 distribute==0.6.36
+networkx==1.7
+uWSGI==1.9.8
 wsgiref==0.1.2

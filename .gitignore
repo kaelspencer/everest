@@ -36,3 +36,4 @@ nosetests.xml
 
 debug.cfg
 production.cfg
+everest.pid

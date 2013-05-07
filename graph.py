@@ -6,7 +6,7 @@ from db import get_all
 class SystemGraph():
     def __init__(self):
         self.g = nx.Graph()
-        jumps = get_all('select fromSolarSystemID, toSolarSystemId from eve.mapSolarSystemJumps', {})
+        jumps = get_all('select fromSolarSystemID, toSolarSystemId from mapSolarSystemJumps', {})
         self.g.add_edges_from(jumps)
 
     # Calculate the number of jumps. Throws LookupError if the nodes weren't found.
