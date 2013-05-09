@@ -137,3 +137,8 @@ def jump_station_ss(source, destination):
     sysid_source = sta_to_sysid(source)
     sysid_destination = sta_to_sysid(destination)
     return jump_ii(sysid_source, sysid_destination)
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
