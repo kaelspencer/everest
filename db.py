@@ -1,26 +1,40 @@
 from app import app
-from flask import _app_ctx_stack
+from flask import _app_ctx_stack as stack
 import MySQLdb
 
 def get_db(app):
-    top = _app_ctx_stack
+    top = stack.top
     if not hasattr(top, 'mysql_db'):
+        app.logger.debug('Creating new MySQL connection.')
         top.mysql_db = MySQLdb.connect(host=app.config['HOST'], user=app.config['USER'], passwd=app.config['PASSWORD'], db=app.config['DATABASE'])
     return top.mysql_db
 
-@app.teardown_appcontext
 def close_db(app):
-    top = _app_ctx_stack.top
+    top = stack.top
     if hasattr(top, 'mysql_db'):
+        app.logger.debug('Closing MySQL connection.')
         top.mysql_db.close()
+
+# The db connection can timeout and a simply retry can fix it.
+def try_execute(query, params):
+    try:
+        db = get_db(app)
+        c = db.cursor()
+        count = c.execute(query, params)
+        return count, c
+    except:
+	app.logger.error('Exception thrown during execution. Retrying.')
+        close_db(app)
+        db = get_db(app)
+        c = db.cursor()
+        count = c.execute(query, params)
+        return count, c
 
 # Issues a query that is supposed to return exactly one row.
 # LookupError exception is thrown if the query returns 0 items and a log warning
 # is written if more than one is returned. In that case, the first row is returned.
 def get_one(query, params):
-    db = get_db(app)
-    c = db.cursor()
-    count = c.execute(query, params)
+    count, c = try_execute(query, params)
 
     if count == 0:
         raise LookupError
@@ -31,7 +45,5 @@ def get_one(query, params):
 
 # Issues a query and returns all results.
 def get_all(query, params):
-    db = get_db(app)
-    c = db.cursor()
-    c.execute(query, params)
+    count, c = try_execute(query, params)
     return c.fetchall()
