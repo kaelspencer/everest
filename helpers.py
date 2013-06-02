@@ -27,3 +27,26 @@ def sysid_list_to_object(sysids):
 def sysid_to_object(sysid):
     row = get_one('select solarSystemID, solarSystemName from mapSolarSystems where solarSystemID = %(system)s', { 'system': sysid })
     return { 'id': row[0], 'name': row[1] }
+
+# The source could be either a system or station. Turn it into a system ID.
+# A number passed in won't return an error. If it's not a station ID it's assumed to be a system ID.
+# A string will throw LookupError if it can't be found as either a system or station.
+def location_lookup(source):
+    result = source
+
+    if unicode(source).isnumeric():
+        # It's a number. It might be a station ID, so try to convert it to a system ID.
+        try:
+            result = staid_to_sysid(source)
+        except LookupError:
+            # Not a station ID. Assume it's a system ID and return it.
+            pass
+    else:
+        # First try to convert it as a station to a sys ID.
+        # If that fails, try to convert it as a system to a sys ID.
+        try:
+            result = sta_to_sysid(source)
+        except LookupError:
+            result = sys_to_id(source)
+
+    return result

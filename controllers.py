@@ -3,7 +3,7 @@ from db import get_db
 from flask import abort, request, Response, jsonify
 from werkzeug.contrib.cache import MemcachedCache
 from functools import wraps
-from helpers import sys_to_id, sta_to_sysid, staid_to_sysid, sysid_list_to_object
+from helpers import *
 from graph import SystemGraph
 import json
 
@@ -35,9 +35,36 @@ def cached(f):
 def index():
     usage = {
         'route': 'Use /route/<from>/<to>/ for systems and /route/station/<from>/<to>/ for stations to get route information.',
-        'jump': 'Use /jump/<from>/<to>/ for systems and /route/station/<from>/<to>/ for stations to get a jump count.'
+        'jump': 'Use /jump/<from>/<to>/ for systems and /route/station/<from>/<to>/ for stations to get a jump count.',
+        'batch': 'Post to /jump/batch/ json data like this: {\'source\': \'Jita\', \'destinations\': [\'Rens\', \'Ishisomo\']} to get batched jump counts.'
     }
     return jsonify(name='everest', github='https://github.com/kaelspencer/everest', author='Kael Spencer', usage=usage)
+
+@app.route('/jump/batch/', methods=['POST'])
+@handleLookupError
+def jump():
+    if 'source' not in request.json or 'destinations' not in request.json:
+        abort(400)
+
+    g = None
+    source = location_lookup(request.json['source'])
+    results = []
+
+    for dest in request.json['destinations']:
+        destid = location_lookup(dest)
+        cache_key = str(source) + '_' + str(destid)
+
+        cv = cache.get(cache_key)
+        if cv is not None:
+            results.append({ 'destination': dest, 'jumps': cv })
+        else:
+            if g is None:
+                g = SystemGraph()
+            jumps = len(g.route(source, destid)) - 1
+            cache.set(cache_key, jumps)
+            results.append({ 'destination': dest, 'jumps': jumps })
+
+    return jsonify(source=request.json['source'], destinations=results)
 
 # This set of methods handles the routes. Ints are needed, but strings can be supplied.
 # The route method is appended with two letters that describe the type of parameters.

@@ -146,10 +146,88 @@ class JumpStationTestCase(unittest.TestCase):
             result = ''.join(response.data.split())
             self.assertEquals(test['expected'], result, test['url'])
 
+class BatchTestCase(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        self.app = everest.app.test_client()
+
+        self.data = [{ # Source is system name
+            'url': '/jump/batch/',
+            'json': json.dumps({ 'source': 'Jita', 'destinations': ['Rens', 'Frarn']}),
+            'expected': ''.join(json.dumps({ 'source': 'Jita', 'destinations': [{ 'destination': 'Rens', 'jumps': 15}, { 'destination': 'Frarn', 'jumps': 14}]}).split())
+        }, {
+            'url': '/jump/batch/',
+            'json': json.dumps({ 'source': 'Jita', 'destinations': [30002510, 'Frarn']}),
+            'expected': ''.join(json.dumps({ 'source': 'Jita', 'destinations': [{ 'destination': 30002510, 'jumps': 15}, { 'destination': 'Frarn', 'jumps': 14}]}).split())
+        }, {
+            'url': '/jump/batch/',
+            'json': json.dumps({ 'source': 'Jita', 'destinations': ['Rens VI - Moon 8 - Brutor Tribe Treasury', 'Frarn']}),
+            'expected': ''.join(json.dumps({ 'source': 'Jita', 'destinations': [{ 'destination': 'Rens VI - Moon 8 - Brutor Tribe Treasury', 'jumps': 15}, { 'destination': 'Frarn', 'jumps': 14}]}).split())
+        }, {
+            'url': '/jump/batch/',
+            'json': json.dumps({ 'source': 'Jita', 'destinations': [60004588, 'Frarn']}),
+            'expected': ''.join(json.dumps({ 'source': 'Jita', 'destinations': [{ 'destination': 60004588, 'jumps': 15}, { 'destination': 'Frarn', 'jumps': 14}]}).split())
+        }, { # Source is system ID
+            'url': '/jump/batch/',
+            'json': json.dumps({ 'source': 30000142, 'destinations': ['Rens', 'Frarn']}),
+            'expected': ''.join(json.dumps({ 'source': 30000142, 'destinations': [{ 'destination': 'Rens', 'jumps': 15}, { 'destination': 'Frarn', 'jumps': 14}]}).split())
+        }, {
+            'url': '/jump/batch/',
+            'json': json.dumps({ 'source': 30000142, 'destinations': [30002510, 'Frarn']}),
+            'expected': ''.join(json.dumps({ 'source': 30000142, 'destinations': [{ 'destination': 30002510, 'jumps': 15}, { 'destination': 'Frarn', 'jumps': 14}]}).split())
+        }, {
+            'url': '/jump/batch/',
+            'json': json.dumps({ 'source': 30000142, 'destinations': ['Rens VI - Moon 8 - Brutor Tribe Treasury', 'Frarn']}),
+            'expected': ''.join(json.dumps({ 'source': 30000142, 'destinations': [{ 'destination': 'Rens VI - Moon 8 - Brutor Tribe Treasury', 'jumps': 15}, { 'destination': 'Frarn', 'jumps': 14}]}).split())
+        }, {
+            'url': '/jump/batch/',
+            'json': json.dumps({ 'source': 30000142, 'destinations': [60004588, 'Frarn']}),
+            'expected': ''.join(json.dumps({ 'source': 30000142, 'destinations': [{ 'destination': 60004588, 'jumps': 15}, { 'destination': 'Frarn', 'jumps': 14}]}).split())
+        }, { # Source is station name
+            'url': '/jump/batch/',
+            'json': json.dumps({ 'source': 'Jita IV - Caldari Business Tribunal Information Center', 'destinations': ['Rens', 'Frarn']}),
+            'expected': ''.join(json.dumps({ 'source': 'Jita IV - Caldari Business Tribunal Information Center', 'destinations': [{ 'destination': 'Rens', 'jumps': 15}, { 'destination': 'Frarn', 'jumps': 14}]}).split())
+        }, {
+            'url': '/jump/batch/',
+            'json': json.dumps({ 'source': 'Jita IV - Caldari Business Tribunal Information Center', 'destinations': [30002510, 'Frarn']}),
+            'expected': ''.join(json.dumps({ 'source': 'Jita IV - Caldari Business Tribunal Information Center', 'destinations': [{ 'destination': 30002510, 'jumps': 15}, { 'destination': 'Frarn', 'jumps': 14}]}).split())
+        }, {
+            'url': '/jump/batch/',
+            'json': json.dumps({ 'source': 'Jita IV - Caldari Business Tribunal Information Center', 'destinations': ['Rens VI - Moon 8 - Brutor Tribe Treasury', 'Frarn']}),
+            'expected': ''.join(json.dumps({ 'source': 'Jita IV - Caldari Business Tribunal Information Center', 'destinations': [{ 'destination': 'Rens VI - Moon 8 - Brutor Tribe Treasury', 'jumps': 15}, { 'destination': 'Frarn', 'jumps': 14}]}).split())
+        }, {
+            'url': '/jump/batch/',
+            'json': json.dumps({ 'source': 'Jita IV - Caldari Business Tribunal Information Center', 'destinations': [60004588, 'Frarn']}),
+            'expected': ''.join(json.dumps({ 'source': 'Jita IV - Caldari Business Tribunal Information Center', 'destinations': [{ 'destination': 60004588, 'jumps': 15}, { 'destination': 'Frarn', 'jumps': 14}]}).split())
+        }, { # Source is station ID
+            'url': '/jump/batch/',
+            'json': json.dumps({ 'source': 60003469, 'destinations': ['Rens', 'Frarn']}),
+            'expected': ''.join(json.dumps({ 'source': 60003469, 'destinations': [{ 'destination': 'Rens', 'jumps': 15}, { 'destination': 'Frarn', 'jumps': 14}]}).split())
+        }, {
+            'url': '/jump/batch/',
+            'json': json.dumps({ 'source': 60003469, 'destinations': [30002510, 'Frarn']}),
+            'expected': ''.join(json.dumps({ 'source': 60003469, 'destinations': [{ 'destination': 30002510, 'jumps': 15}, { 'destination': 'Frarn', 'jumps': 14}]}).split())
+        }, {
+            'url': '/jump/batch/',
+            'json': json.dumps({ 'source': 60003469, 'destinations': ['Rens VI - Moon 8 - Brutor Tribe Treasury', 'Frarn']}),
+            'expected': ''.join(json.dumps({ 'source': 60003469, 'destinations': [{ 'destination': 'Rens VI - Moon 8 - Brutor Tribe Treasury', 'jumps': 15}, { 'destination': 'Frarn', 'jumps': 14}]}).split())
+        }, {
+            'url': '/jump/batch/',
+            'json': json.dumps({ 'source': 60003469, 'destinations': [60004588, 'Frarn']}),
+            'expected': ''.join(json.dumps({ 'source': 60003469, 'destinations': [{ 'destination': 60004588, 'jumps': 15}, { 'destination': 'Frarn', 'jumps': 14}]}).split())
+        }]
+
+    def runTest(self):
+        for test in self.data:
+            response = self.app.post(test['url'], content_type='application/json', data=test['json'])
+            result = ''.join(response.data.split())
+            self.assertEquals(test['expected'], result)
+
 if __name__ == '__main__':
     suite = unittest.TestSuite()
     suite.addTest(RouteTestCase())
     suite.addTest(RouteStationTestCase())
     suite.addTest(JumpTestCase())
     suite.addTest(JumpStationTestCase())
+    suite.addTest(BatchTestCase())
     unittest.TextTestRunner(verbosity=2).run(suite)

@@ -5,14 +5,12 @@ import MySQLdb
 def get_db(app):
     top = stack.top
     if not hasattr(top, 'mysql_db'):
-        app.logger.debug('Creating new MySQL connection.')
         top.mysql_db = MySQLdb.connect(host=app.config['HOST'], user=app.config['USER'], passwd=app.config['PASSWORD'], db=app.config['DATABASE'])
     return top.mysql_db
 
 def close_db(app):
     top = stack.top
     if hasattr(top, 'mysql_db'):
-        app.logger.debug('Closing MySQL connection.')
         top.mysql_db.close()
 
 # The db connection can timeout and a simply retry can fix it.

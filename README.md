@@ -36,6 +36,32 @@ In case you don't want the entire route and just want the jump count, `GET /jump
       "jumps": 15
     }
 
+### Batched Jump Count
+If you need more than a few jump counts you should make use of the batched API. `POST /jump/batch/` accepts json data with one source and multiple destinations. Each location can be a system name or ID, or a station name or ID.
+
+    POST /jump/batch/
+
+    {
+      "source": "Jita",
+      "destinations": [
+        "Rens",
+        "Irjunen"
+      ]
+    }
+
+The response to the request looks like this:
+
+    {
+      "source": "Jita",
+      "destinations": [{
+        "jumps": 15,
+        "destination": "Rens"
+      }, {
+        "jumps": 6,
+        "destination": "Irjunen"
+      }]
+    }
+
 Configuration
 -------------
 To run this locally you'll need everyting in `requirements.txt`. You can either edit `config.py` directory or add a configuration file to your environment. For local development, I have a file called `debug.cfb`, and everest looks for that via EVEREST_CONFIG (so, `export EVEREST_CONFIG=debug.cfg`).
