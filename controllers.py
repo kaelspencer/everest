@@ -56,7 +56,13 @@ def jump():
     results = []
 
     for dest in request.json['destinations']:
-        destid = location_lookup(dest)
+        try:
+            destid = location_lookup(dest)
+        except LookupError:
+            print 'Did not find ' + dest
+            results.append({ 'destination': dest, 'jumps': -1 })
+            continue
+
         cache_key = str(source) + '_' + str(destid)
 
         cv = cache.get(cache_key)
