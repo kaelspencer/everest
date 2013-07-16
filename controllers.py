@@ -6,6 +6,7 @@ from functools import wraps
 from helpers import *
 from graph import SystemGraph
 import json
+from crossdomain import crossdomain
 
 cache = MemcachedCache(['127.0.0.1:11211'])
 
@@ -43,7 +44,11 @@ def index():
 @app.route('/jump/batch/', methods=['POST'])
 @handleLookupError
 def jump():
-    if 'source' not in request.json or 'destinations' not in request.json:
+    if not hasattr(request, 'json'):
+        print 'Aborting: request does not have json data.'
+        abort(400)
+    elif 'source' not in request.json or 'destinations' not in request.json:
+        print 'Aborting: request does not have source and\or destination.'
         abort(400)
 
     g = None
@@ -199,6 +204,6 @@ def jump_station_ss(source, destination):
     return jump_ii(sysid_source, sysid_destination)
 
 @app.after_request
+@crossdomain(origin='*', headers=['Origin', 'X-Requested-With', 'Content-Type', 'Accept'])
 def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', '*')
     return response
