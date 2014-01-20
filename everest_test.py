@@ -1,6 +1,6 @@
 import unittest
 import everest
-import json
+from flask import json
 
 class RouteTestCase(unittest.TestCase):
     @classmethod
