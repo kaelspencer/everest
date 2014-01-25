@@ -5,8 +5,10 @@ from werkzeug.contrib.cache import MemcachedCache
 from functools import wraps
 from helpers import *
 from graph import SystemGraph
+from industry import Industry
 import json
 from crossdomain import crossdomain
+import traceback
 
 cache = MemcachedCache(['127.0.0.1:11211'])
 
@@ -17,6 +19,7 @@ def handleLookupError(f):
         try:
             return f(*args, **kwargs)
         except LookupError:
+            print traceback.format_exc()
             abort(404)
     return decorated_function
 
@@ -33,6 +36,7 @@ def cached(f):
     return decorated_function
 
 @app.route('/')
+@cached
 def index():
     usage = {
         'route': 'Use /route/<from>/<to>/ for systems and /route/station/<from>/<to>/ for stations to get route information.',
@@ -208,6 +212,20 @@ def jump_station_ss(source, destination):
     sysid_source = sta_to_sysid(source)
     sysid_destination = sta_to_sysid(destination)
     return jump_ii(sysid_source, sysid_destination)
+
+@app.route('/industry/all/')
+@handleLookupError
+def industry():
+    i = Industry(names=False)
+    items = i.fetch()
+    return jsonify(items)
+
+@app.route('/industry/all/names/')
+@handleLookupError
+def industry_names():
+    i = Industry(names=True)
+    items = i.fetch()
+    return jsonify(items=items)
 
 @app.after_request
 @crossdomain(origin='*', headers=['Origin', 'X-Requested-With', 'Content-Type', 'Accept'])

@@ -21,7 +21,7 @@ def try_execute(query, params):
         count = c.execute(query, params)
         return count, c
     except:
-	app.logger.error('Exception thrown during execution. Retrying.')
+        app.logger.error('Exception thrown during execution. Retrying.')
         close_db(app)
         db = get_db(app)
         c = db.cursor()
@@ -35,6 +35,7 @@ def get_one(query, params):
     count, c = try_execute(query, params)
 
     if count == 0:
+        app.logger.warning('No results returned for query <%s>, params <%s>' % (query, params))
         raise LookupError
     elif count > 1:
         app.logger.warning('Query count %d for query <%s>' % (count, query))

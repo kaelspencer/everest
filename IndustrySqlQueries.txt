@@ -1,0 +1,103 @@
+Falcon: 11957 (bp 11958)
+
+All ships:
+
+select invTypes.typeName, invTypes.typeId from invTypes, invMetaTypes, invGroups where invTypes.typeID=invMetaTypes.typeID and invMetaTypes.metaGroupId=2 and invGroups.groupID=invTypes.groupID and invGroups.categoryID=6;
+
+Blueprint Info:
+
+select invTypes.typeID, typeName, productionTime, productivityModifier, wasteFactor, maxProductionLimit, chance
+from invTypes, invBlueprintTypes, inventionChance
+where invTypes.typeID = invBlueprintTypes.productTypeID
+    and inventionChance.typeID = invTypes.typeID
+    and invTypes.typeID = 11957;
+
+Materials (with ME/PE):
+
+select typeid,name,sum(quantity)+(sum(perfect)*(0.25-(0.05*:pe))*max(base)) quantity from(
+select typeid,name,round(if(:me>=0,greatest(0,sum(quantity))+(greatest(0,sum(quantity))*((wastefactor/(:me+1))/100)),greatest(0,sum(quantity))+(greatest(0,sum(quantity))*(wastefactor/100)*(1-:ME)))) quantity,1 base,greatest(0,sum(quantity)) perfect from (
+  select invTypes.typeid typeid,invTypes.typeName name,quantity
+  from invTypes,invTypeMaterials
+  where invTypeMaterials.materialTypeID=invTypes.typeID
+   and invTypeMaterials.TypeID=:typeid
+  union
+  select invTypes.typeid typeid,invTypes.typeName name,
+         invTypeMaterials.quantity*r.quantity*-1 quantity
+  from invTypes,invTypeMaterials,ramTypeRequirements r,invBlueprintTypes bt
+  where invTypeMaterials.materialTypeID=invTypes.typeID
+   and invTypeMaterials.TypeID =r.requiredTypeID
+   and r.typeID = bt.blueprintTypeID
+   and r.activityID = 1 and bt.productTypeID=:typeid and r.recycle=1
+) t join invBlueprintTypes on (invBlueprintTypes.productTypeID=:typeid) group by typeid,name
+union
+SELECT t.typeID typeid,t.typeName tn, r.quantity * r.damagePerJob quantity,0 base,r.quantity * r.damagePerJob perfect
+FROM ramTypeRequirements r,invTypes t,invBlueprintTypes bt,invGroups g
+where r.requiredTypeID = t.typeID and r.typeID = bt.blueprintTypeID
+and r.activityID = 1 and bt.productTypeID=:typeid and g.categoryID != 16
+and t.groupID = g.groupID) outside group by typeid,name
+
+Datacores:
+
+select it2.typeid,it2.typename,quantity
+from invTypes,invGroups,invMetaTypes,ramTypeRequirements,invBlueprintTypes,invTypes it2
+where invTypes.typeid=invMetaTypes.typeid and invMetaTypes.metaGroupId=2 and invGroups.groupid=invTypes.groupid and invBlueprintTypes.blueprintTypeID=ramTypeRequirements.typeid and invBlueprintTypes.productTypeID=invMetaTypes.parenttypeid and it2.typeid=requiredTypeID and activityID=8 and it2.groupID!=716 and invTypes.typeid=11957;
+
+Interface:
+
+select it2.typeid,it2.typename,quantity
+from invTypes,invGroups,invMetaTypes,ramTypeRequirements,invBlueprintTypes,invTypes it2
+where invTypes.typeid=invMetaTypes.typeid and invMetaTypes.metaGroupId=2 and invGroups.groupid=invTypes.groupid and invBlueprintTypes.blueprintTypeID=ramTypeRequirements.typeid and invBlueprintTypes.productTypeID=invMetaTypes.parenttypeid and it2.typeid=requiredTypeID and activityID=8 and it2.groupID=716 and invTypes.typeid=11957;
+
+Interface's Decryptor Group:
+Decryptor Group IDs: 728, 729, 730, 731 (invGroups.groupID)
+728: Amarr      Occult
+729: Minmatar   Cryptic
+730: Gallente   Incognito
+731: Caldari    Esoteric
+
+List of Decryptors:
+
+select typeID, groupID, typeName from invTypes where groupID in (728, 729, 730, 731) order by groupID, typeID;
+
+Which Group for an Item:
+
+select valueInt
+from dgmTypeAttributes
+where attributeID=1115 and typeID=
+(select it2.typeid
+from invTypes,invGroups,invMetaTypes,ramTypeRequirements,invBlueprintTypes,invTypes it2
+where invTypes.typeid=invMetaTypes.typeid and invMetaTypes.metaGroupId=2 and invGroups.groupid=invTypes.groupid and invBlueprintTypes.blueprintTypeID=ramTypeRequirements.typeid and invBlueprintTypes.productTypeID=invMetaTypes.parenttypeid and it2.typeid=requiredTypeID and activityID=8 and it2.groupID=716 and invTypes.typeid=11957);
+
+
+Decryptor Information:
+
+select a.typeID, a.valueInt, a.valueFloat, b.attributeID, b.attributeName, b.displayName, b. unitID, b.categoryID from dgmTypeAttributes a, dgmAttributeTypes b where a.attributeID=b.attributeID and a.typeID=21573;
+
+
+attributeID 1115 is the interface's property which points to the decryptor group ID above.
+select * from dgmTypeAttributes where attributeID=1115 limit 10;
+
+
+Invention Chance Table:
+
+create table inventionChance(typeid int,chance float);
+
+insert into inventionChance (typeid,chance)
+select t1.typeID,
+CASE
+WHEN t2.groupID IN (419,27) OR t1.typeID = 17476
+THEN 0.20
+WHEN t2.groupID IN (26,28) OR t1.typeID = 17478
+THEN 0.25
+WHEN t2.groupID IN (25,420,513) OR t1.typeID = 17480
+THEN 0.30
+WHEN EXISTS (SELECT * FROM invMetaTypes WHERE typeID = t1.typeID AND metaGroupID = 2)
+THEN 0.40
+ELSE 0.00
+end as chance
+from invTypes t1, invMetaTypes, invGroups, invTypes t2
+where t1.typeID=invMetaTypes.typeID
+    and invMetaTypes.metaGroupId=2
+    and invGroups.groupID=t1.groupID
+    and t1.published=1
+    and invMetaTypes.parentTypeID=t2.typeID;
