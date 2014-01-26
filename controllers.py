@@ -213,19 +213,43 @@ def jump_station_ss(source, destination):
     sysid_destination = sta_to_sysid(destination)
     return jump_ii(sysid_source, sysid_destination)
 
+def industry(names=False, rigs=True, category=-1):
+    if not category in (-1, 6, 7, 8, 18, 22):
+        raise LookupError
+
+    i = Industry(names=names, rigs=rigs, category=category)
+    items = i.fetch()
+    return jsonify(items=items)
+
 @app.route('/industry/all/')
 @handleLookupError
-def industry():
-    i = Industry(names=False)
-    items = i.fetch()
-    return jsonify(items)
+def industry_all():
+    return industry()
 
 @app.route('/industry/all/names/')
 @handleLookupError
 def industry_names():
-    i = Industry(names=True)
-    items = i.fetch()
-    return jsonify(items=items)
+    return industry(names=True)
+
+@app.route('/industry/norigs/')
+@handleLookupError
+def industry_norigs():
+    return industry(rigs=False)
+
+@app.route('/industry/norigs/names/')
+@handleLookupError
+def industry_norigs_names():
+    return industry(names=True, rigs=False)
+
+@app.route('/industry/<int:category>/')
+@handleLookupError
+def industry_category(category):
+    return industry(category=category)
+
+@app.route('/industry/<int:category>/names/')
+@handleLookupError
+def industry_category_names(category):
+    return industry(names=True, category=category)
 
 @app.after_request
 @crossdomain(origin='*', headers=['Origin', 'X-Requested-With', 'Content-Type', 'Accept'])

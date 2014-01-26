@@ -2,12 +2,14 @@ from app import app
 from db import get_all, get_one
 
 class Industry():
-    def __init__(self, names=False, category=-1):
+    def __init__(self, names=False, category=-1, rigs=True):
         # This query gets inventable items. If category is -1 (default), all inventable items are retrieved. Otherwise, only the requested category is returned. Expected categories: 6, 7, 8, 18, 22.
-        if category == -1:
-            self.inventable_items = get_all(g_inventable_all['sql'], ())
-        else:
+        if category != -1:
             self.inventable_items = get_all(g_inventable_category['sql'], (category))
+        elif rigs == False:
+            self.inventable_items = get_all(g_inventable_no_rigs['sql'], ())
+        else:
+            self.inventable_items = get_all(g_inventable_all['sql'], ())
 
         self.items = dict()
         self.names = names
@@ -143,6 +145,22 @@ where invTypes.typeID=invMetaTypes.typeID
     and invMetaTypes.metaGroupId=2
     and invGroups.groupID=invTypes.groupID
     and invTypes.published=1
+order by invGroups.categoryID, invTypes.typeName''',
+    'typeID': 0,
+    'typeName': 1,
+    'categoryID': 2
+}
+
+# Query to retrieve all inventable items except rigs.
+g_inventable_no_rigs = {
+    'sql': '''
+select invTypes.typeID, invTypes.typeName, invGroups.categoryID
+from invTypes, invMetaTypes, invGroups
+where invTypes.typeID=invMetaTypes.typeID
+    and invMetaTypes.metaGroupId=2
+    and invGroups.groupID=invTypes.groupID
+    and invTypes.published=1
+    and invGroups.groupName not like "%%rig%%" and invTypes.typeName like "Mackinaw"
 order by invGroups.categoryID, invTypes.typeName''',
     'typeID': 0,
     'typeName': 1,
