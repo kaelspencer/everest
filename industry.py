@@ -18,20 +18,41 @@ class Industry():
     # affected and unaffected by ME waste. The column 'waste' identifies this.
     def perfect_materials(self, item):
         typeid = item['typeID']
-        item['perfectMaterials'] = dict()
+        item['perfectMaterials'] = []
         materials = get_all(g_perfect_materials['sql'], (typeid, typeid, typeid))
+
+        # This dict will be used to keep track of which materials have been seen. If a material
+        # is listed in the regular list (affected by ME waste) and it appears in the extra
+        # material list (not affected by ME waste), it must have PE waste applied to it.
+        # This also requires the result set from the materials query to be sorted with normal
+        # materials first followed by extra materials.
+        requiredMaterials = dict()
 
         for material in materials:
             if material[g_perfect_materials['quantity']] > 0:
                 typeid = material[g_perfect_materials['typeID']]
-                item['perfectMaterials'][typeid] = {
+                wasteME = bool(material[g_perfect_materials['waste']])
+
+                # PE always applies if ME waste applies.
+                wastePE = wasteME
+
+                if typeid in requiredMaterials:
+                    wastePE = True
+                else:
+                    requiredMaterials[typeid] = True
+
+                pm = {
+                    'typeID': typeid,
                     'quantity': float(material[g_perfect_materials['quantity']]),
                     'dmg': float(material[g_perfect_materials['dmg']]),
-                    'waste': float(material[g_perfect_materials['waste']]),
+                    'wasteME': wasteME,
+                    'wastePE': wastePE
                 }
 
                 if self.names:
-                    item['perfectMaterials'][typeid]['name'] = material[g_perfect_materials['name']]
+                    pm['name'] = material[g_perfect_materials['name']]
+
+                item['perfectMaterials'].append(pm)
 
     # Retrieve item blueprint information.
     def item_info(self, typeid):
@@ -160,7 +181,7 @@ where invTypes.typeID=invMetaTypes.typeID
     and invMetaTypes.metaGroupId=2
     and invGroups.groupID=invTypes.groupID
     and invTypes.published=1
-    and invGroups.groupName not like "%%rig%%" and invTypes.typeName like "Mackinaw"
+    and invGroups.groupName not like "%%rig%%"
 order by invGroups.categoryID, invTypes.typeName''',
     'typeID': 0,
     'typeName': 1,

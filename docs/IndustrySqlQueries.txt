@@ -12,6 +12,31 @@ where invTypes.typeID = invBlueprintTypes.productTypeID
     and inventionChance.typeID = invTypes.typeID
     and invTypes.typeID = 11957;
 
+Materials (Perfect):
+
+select typeid,name,greatest(0,sum(quantity)) quantity, 1 dmg, true waste from (
+    select invTypes.typeid typeid,invTypes.typeName name,quantity
+    from invTypes,invTypeMaterials
+    where invTypeMaterials.materialTypeID=invTypes.typeID
+        and invTypeMaterials.TypeID=%s
+union
+    select invTypes.typeid typeid,invTypes.typeName name, invTypeMaterials.quantity*r.quantity*-1 quantity
+    from invTypes,invTypeMaterials,ramTypeRequirements r,invBlueprintTypes bt
+    where invTypeMaterials.materialTypeID=invTypes.typeID
+        and invTypeMaterials.TypeID =r.requiredTypeID
+        and r.typeID = bt.blueprintTypeID
+        and r.activityID = 1 and bt.productTypeID=%s and r.recycle=1
+) t group by typeid, name
+union
+select t.typeID typeid, t.typeName name, r.quantity quantity, r.damagePerJob dmg, false waste
+from ramTypeRequirements r, invTypes t, invBlueprintTypes bt, invGroups g
+where r.requiredTypeID = t.typeID
+    and r.typeID = bt.blueprintTypeID
+    and r.activityID = 1
+    and bt.productTypeID=%s
+    and g.categoryID != 16
+    and t.groupID = g.groupID;
+
 Materials (with ME/PE):
 
 select typeid,name,sum(quantity)+(sum(perfect)*(0.25-(0.05*:pe))*max(base)) quantity from(
@@ -85,11 +110,11 @@ create table inventionChance(typeid int,chance float);
 insert into inventionChance (typeid,chance)
 select t1.typeID,
 CASE
-WHEN t2.groupID IN (419,27) OR t1.typeID = 17476
+WHEN t2.groupID IN (419,27) OR t1.typeID = 22544
 THEN 0.20
-WHEN t2.groupID IN (26,28) OR t1.typeID = 17478
+WHEN t2.groupID IN (26,28) OR t1.typeID = 22548
 THEN 0.25
-WHEN t2.groupID IN (25,420,513) OR t1.typeID = 17480
+WHEN t2.groupID IN (25,420,513) OR t1.typeID = 22546
 THEN 0.30
 WHEN EXISTS (SELECT * FROM invMetaTypes WHERE typeID = t1.typeID AND metaGroupID = 2)
 THEN 0.40
