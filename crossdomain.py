@@ -20,7 +20,12 @@ def crossdomain(origin=None, methods=None, headers=None,
             return methods
 
         options_resp = current_app.make_default_options_response()
-        return options_resp.headers['allow']
+
+        try:
+            return options_resp.headers['Allow']
+        except:
+            # This might not be present on all requests. Let is 404 instead of 500.
+            pass
 
     def decorator(f):
         def wrapped_function(*args, **kwargs):
