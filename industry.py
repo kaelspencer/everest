@@ -66,6 +66,7 @@ class Industry():
                 'wasteFactor': item_row[g_item['wasteFactor']],
                 'maxProductionLimit': item_row[g_item['maxProductionLimit']],
                 'chance': item_row[g_item['chance']],
+                'categoryName': item_row[g_item['categoryName']],
             }
 
             return True
@@ -111,9 +112,11 @@ class Industry():
 # Query for item information. Expects one typeid.
 g_item = {
     'sql': '''
-select invTypes.typeID, typeName, productionTime, productivityModifier, wasteFactor, maxProductionLimit, chance
-from invTypes, invBlueprintTypes, inventionChance
+select invTypes.typeID, typeName, productionTime, productivityModifier, wasteFactor, maxProductionLimit, chance, categoryName
+from invTypes, invBlueprintTypes, inventionChance, invGroups, invCategories
 where invTypes.typeID = invBlueprintTypes.productTypeID
+    and invTypes.groupID = invGroups.groupID
+    and invGroups.categoryID = invCategories.categoryID
     and inventionChance.typeID = invTypes.typeID
     and invTypes.typeID = %s''',
     'typeID': 0,
@@ -122,7 +125,8 @@ where invTypes.typeID = invBlueprintTypes.productTypeID
     'productivityModifier': 3,
     'wasteFactor': 4,
     'maxProductionLimit': 5,
-    'chance': 6
+    'chance': 6,
+    'categoryName': 7
 }
 
 # This query retrieves the perfect bill of materials. It requires the typeid three times.
