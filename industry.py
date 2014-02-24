@@ -2,9 +2,12 @@ from app import app
 from db import get_all, get_one
 
 class Industry():
-    def __init__(self, names=False, category=-1, rigs=True):
+    def __init__(self, names=False, category=-1, rigs=True, detail=-1):
         # This query gets inventable items. If category is -1 (default), all inventable items are retrieved. Otherwise, only the requested category is returned. Expected categories: 6, 7, 8, 18, 22.
-        if category != -1:
+        # If detail is set it must be an itemid and that will be all the information that is returned.
+        if detail != -1:
+            self.inventable_items = [[detail]]
+        elif category != -1:
             self.inventable_items = get_all(g_inventable_category['sql'], (category))
         elif rigs == False:
             self.inventable_items = get_all(g_inventable_no_rigs['sql'], ())
