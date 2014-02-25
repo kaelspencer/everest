@@ -1,10 +1,10 @@
-Falcon: 11957 (bp 11958)
+# Falcon: 11957 (bp 11958)
 
-All ships:
+# All ships:
 
 select invTypes.typeName, invTypes.typeId from invTypes, invMetaTypes, invGroups where invTypes.typeID=invMetaTypes.typeID and invMetaTypes.metaGroupId=2 and invGroups.groupID=invTypes.groupID and invGroups.categoryID=6;
 
-Blueprint Info:
+# Blueprint Info:
 
 select invTypes.typeID, typeName, productionTime, productivityModifier, wasteFactor, maxProductionLimit, chance
 from invTypes, invBlueprintTypes, inventionChance
@@ -12,7 +12,7 @@ where invTypes.typeID = invBlueprintTypes.productTypeID
     and inventionChance.typeID = invTypes.typeID
     and invTypes.typeID = 11957;
 
-Materials (Perfect):
+# Materials (Perfect):
 
 select typeid,name,greatest(0,sum(quantity)) quantity, 1 dmg, true waste from (
     select invTypes.typeid typeid,invTypes.typeName name,quantity
@@ -37,7 +37,7 @@ where r.requiredTypeID = t.typeID
     and g.categoryID != 16
     and t.groupID = g.groupID;
 
-Materials (with ME/PE):
+# Materials (with ME/PE):
 
 select typeid,name,sum(quantity)+(sum(perfect)*(0.25-(0.05*:pe))*max(base)) quantity from(
 select typeid,name,round(if(:me>=0,greatest(0,sum(quantity))+(greatest(0,sum(quantity))*((wastefactor/(:me+1))/100)),greatest(0,sum(quantity))+(greatest(0,sum(quantity))*(wastefactor/100)*(1-:ME)))) quantity,1 base,greatest(0,sum(quantity)) perfect from (
@@ -61,30 +61,30 @@ where r.requiredTypeID = t.typeID and r.typeID = bt.blueprintTypeID
 and r.activityID = 1 and bt.productTypeID=:typeid and g.categoryID != 16
 and t.groupID = g.groupID) outside group by typeid,name
 
-Datacores:
+# Datacores:
 
 select it2.typeid,it2.typename,quantity
 from invTypes,invGroups,invMetaTypes,ramTypeRequirements,invBlueprintTypes,invTypes it2
 where invTypes.typeid=invMetaTypes.typeid and invMetaTypes.metaGroupId=2 and invGroups.groupid=invTypes.groupid and invBlueprintTypes.blueprintTypeID=ramTypeRequirements.typeid and invBlueprintTypes.productTypeID=invMetaTypes.parenttypeid and it2.typeid=requiredTypeID and activityID=8 and it2.groupID!=716 and invTypes.typeid=11957;
 
-Interface:
+# Interface:
 
 select it2.typeid,it2.typename,quantity
 from invTypes,invGroups,invMetaTypes,ramTypeRequirements,invBlueprintTypes,invTypes it2
 where invTypes.typeid=invMetaTypes.typeid and invMetaTypes.metaGroupId=2 and invGroups.groupid=invTypes.groupid and invBlueprintTypes.blueprintTypeID=ramTypeRequirements.typeid and invBlueprintTypes.productTypeID=invMetaTypes.parenttypeid and it2.typeid=requiredTypeID and activityID=8 and it2.groupID=716 and invTypes.typeid=11957;
 
-Interface's Decryptor Group:
+# Interface's Decryptor Group:
 Decryptor Group IDs: 728, 729, 730, 731 (invGroups.groupID)
 728: Amarr      Occult
 729: Minmatar   Cryptic
 730: Gallente   Incognito
 731: Caldari    Esoteric
 
-List of Decryptors:
+# List of Decryptors:
 
 select typeID, groupID, typeName from invTypes where groupID in (728, 729, 730, 731) order by groupID, typeID;
 
-Which Group for an Item:
+# Which Group for an Item:
 
 select valueInt
 from dgmTypeAttributes
@@ -94,16 +94,16 @@ from invTypes,invGroups,invMetaTypes,ramTypeRequirements,invBlueprintTypes,invTy
 where invTypes.typeid=invMetaTypes.typeid and invMetaTypes.metaGroupId=2 and invGroups.groupid=invTypes.groupid and invBlueprintTypes.blueprintTypeID=ramTypeRequirements.typeid and invBlueprintTypes.productTypeID=invMetaTypes.parenttypeid and it2.typeid=requiredTypeID and activityID=8 and it2.groupID=716 and invTypes.typeid=11957);
 
 
-Decryptor Information:
+# Decryptor Information:
 
 select a.typeID, a.valueInt, a.valueFloat, b.attributeID, b.attributeName, b.displayName, b. unitID, b.categoryID from dgmTypeAttributes a, dgmAttributeTypes b where a.attributeID=b.attributeID and a.typeID=21573;
 
 
-attributeID 1115 is the interface's property which points to the decryptor group ID above.
+# attributeID 1115 is the interface's property which points to the decryptor group ID above.
 select * from dgmTypeAttributes where attributeID=1115 limit 10;
 
 
-Invention Chance Table:
+# Invention Chance Table:
 
 create table inventionChance(typeid int,chance float);
 
@@ -126,3 +126,14 @@ where t1.typeID=invMetaTypes.typeID
     and invGroups.groupID=t1.groupID
     and t1.published=1
     and invMetaTypes.parentTypeID=t2.typeID;
+
+
+# T1 BPO:
+
+select t3.typeID, t3.typeName, t1.blueprintTypeID, t1.researchCopyTime
+from invBlueprintTypes t1
+inner join invMetaTypes t2
+  on t1.productTypeID = t2.parentTypeID
+inner join invTypes t3
+  on t3.typeID = t1.productTypeID
+where t2.typeID = 11957;

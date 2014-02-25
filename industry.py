@@ -5,8 +5,11 @@ class Industry():
     def __init__(self, names=False, category=-1, rigs=True, detail=-1):
         # This query gets inventable items. If category is -1 (default), all inventable items are retrieved. Otherwise, only the requested category is returned. Expected categories: 6, 7, 8, 18, 22.
         # If detail is set it must be an itemid and that will be all the information that is returned.
+        self.t1bpo = False
+
         if detail != -1:
             self.inventable_items = [[detail]]
+            self.t1bpo = True
         elif category != -1:
             self.inventable_items = get_all(g_inventable_category['sql'], (category))
         elif rigs == False:
@@ -71,6 +74,17 @@ class Industry():
                 'chance': item_row[g_item['chance']],
                 'categoryName': item_row[g_item['categoryName']],
             }
+
+            if self.t1bpo:
+                item_row = get_one(g_t1bpo['sql'], (typeid))
+                self.items[typeid]['t1bpo'] = {
+                    'typeID': item_row[g_t1bpo['typeID']],
+                    'blueprintTypeID': item_row[g_t1bpo['blueprintTypeID']],
+                    'researchCopyTime': item_row[g_t1bpo['researchCopyTime']],
+                }
+
+                if self.names:
+                    self.items[typeid]['t1bpo']['typeName'] = item_row[g_t1bpo['typeName']]
 
             return True
         except LookupError:
@@ -223,7 +237,7 @@ where invTypes.typeid=invMetaTypes.typeid and invMetaTypes.metaGroupId=2 and inv
     'valueInt': 0
 }
 
-# Query to retrieve the datacores required. Expects on inventable item ID.
+# Query to retrieve the datacores required. Expects one inventable item ID.
 g_datacores = {
     'sql': '''
 select it2.typeid,it2.typename,quantity
@@ -232,4 +246,20 @@ where invTypes.typeid=invMetaTypes.typeid and invMetaTypes.metaGroupId=2 and inv
     'typeID': 0,
     'typeName': 1,
     'quantity': 2
+}
+
+# Query to retrieve the parent T1 blueprint information. Expects one inventable item ID.
+g_t1bpo = {
+    'sql': '''
+select t3.typeID, t3.typeName, t1.blueprintTypeID, t1.researchCopyTime
+from invBlueprintTypes t1
+inner join invMetaTypes t2
+  on t1.productTypeID = t2.parentTypeID
+inner join invTypes t3
+  on t3.typeID = t1.productTypeID
+where t2.typeID = %s''',
+    'typeID': 0,
+    'typeName': 1,
+    'blueprintTypeID': 2,
+    'researchCopyTime': 3
 }
