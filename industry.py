@@ -5,11 +5,8 @@ class Industry():
     def __init__(self, names=False, category=-1, rigs=True, detail=-1):
         # This query gets inventable items. If category is -1 (default), all inventable items are retrieved. Otherwise, only the requested category is returned. Expected categories: 6, 7, 8, 18, 22.
         # If detail is set it must be an itemid and that will be all the information that is returned.
-        self.t1bpo = False
-
         if detail != -1:
             self.inventable_items = [[detail]]
-            self.t1bpo = True
         elif category != -1:
             self.inventable_items = get_all(g_inventable_category['sql'], (category))
         elif rigs == False:
@@ -75,16 +72,15 @@ class Industry():
                 'categoryName': item_row[g_item['categoryName']],
             }
 
-            if self.t1bpo:
-                item_row = get_one(g_t1bpo['sql'], (typeid))
-                self.items[typeid]['t1bpo'] = {
-                    'typeID': item_row[g_t1bpo['typeID']],
-                    'blueprintTypeID': item_row[g_t1bpo['blueprintTypeID']],
-                    'researchCopyTime': item_row[g_t1bpo['researchCopyTime']],
-                }
+            item_row = get_one(g_t1bpo['sql'], (typeid))
+            self.items[typeid]['t1bpo'] = {
+                'typeID': item_row[g_t1bpo['typeID']],
+                'blueprintTypeID': item_row[g_t1bpo['blueprintTypeID']],
+                'researchCopyTime': item_row[g_t1bpo['researchCopyTime']],
+            }
 
-                if self.names:
-                    self.items[typeid]['t1bpo']['typeName'] = item_row[g_t1bpo['typeName']]
+            if self.names:
+                self.items[typeid]['t1bpo']['typeName'] = item_row[g_t1bpo['typeName']]
 
             return True
         except LookupError:
