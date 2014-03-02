@@ -77,6 +77,7 @@ class Industry():
                 'typeID': item_row[g_t1bpo['typeID']],
                 'blueprintTypeID': item_row[g_t1bpo['blueprintTypeID']],
                 'researchCopyTime': item_row[g_t1bpo['researchCopyTime']],
+                'maxProductionLimit': item_row[g_t1bpo['maxProductionLimit']],
             }
 
             if self.names:
@@ -247,7 +248,7 @@ where invTypes.typeid=invMetaTypes.typeid and invMetaTypes.metaGroupId=2 and inv
 # Query to retrieve the parent T1 blueprint information. Expects one inventable item ID.
 g_t1bpo = {
     'sql': '''
-select t3.typeID, t3.typeName, t1.blueprintTypeID, t1.researchCopyTime
+select t3.typeID, t3.typeName, t1.blueprintTypeID, t1.researchCopyTime, t1.maxProductionLimit
 from invBlueprintTypes t1
 inner join invMetaTypes t2
   on t1.productTypeID = t2.parentTypeID
@@ -257,5 +258,6 @@ where t2.typeID = %s''',
     'typeID': 0,
     'typeName': 1,
     'blueprintTypeID': 2,
-    'researchCopyTime': 3
+    'researchCopyTime': 3,
+    'maxProductionLimit': 4
 }

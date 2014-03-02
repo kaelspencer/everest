@@ -130,7 +130,7 @@ where t1.typeID=invMetaTypes.typeID
 
 # T1 BPO:
 
-select t3.typeID, t3.typeName, t1.blueprintTypeID, t1.researchCopyTime
+select t3.typeID, t3.typeName, t1.blueprintTypeID, t1.researchCopyTime, t1.maxProductionLimit
 from invBlueprintTypes t1
 inner join invMetaTypes t2
   on t1.productTypeID = t2.parentTypeID

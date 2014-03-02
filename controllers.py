@@ -256,7 +256,7 @@ def industry_category_names(category):
 def industry_detail(itemid):
     return industry(detail=itemid)
 
-@app.route('/industry/detail/<int:itemid>/names/')
+@app.route('/industry/detail/names/<int:itemid>/')
 @handleLookupError
 def industry_detail_names(itemid):
     return industry(names=True, detail=itemid)
