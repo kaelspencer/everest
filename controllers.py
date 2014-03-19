@@ -83,135 +83,167 @@ def jump():
 
 # This set of methods handles the routes. Ints are needed, but strings can be supplied.
 # The route method is appended with two letters that describe the type of parameters.
-@app.route('/route/<int:source>/<int:destination>/')
+@app.route('/route/<int:source>/<int:destination>/', defaults={'highonly': False, 'nohigh': False})
+@app.route('/route/<int:source>/<int:destination>/highonly/', defaults={'highonly': True, 'nohigh': False})
+@app.route('/route/<int:source>/<int:destination>/nohigh/', defaults={'highonly': False, 'nohigh': True})
 @handleLookupError
 @cached
-def route_ii(source, destination):
-    g = SystemGraph()
+def route_ii(source, destination, highonly, nohigh):
+    g = SystemGraph(highonly, nohigh)
     route = g.route(source, destination)
     route = sysid_list_to_object(route)
     count = len(route) - 1
     return jsonify(route=route, count=count)
 
-@app.route('/route/<source>/<int:destination>/')
+@app.route('/route/<source>/<int:destination>/', defaults={'highonly': False, 'nohigh': False})
+@app.route('/route/<source>/<int:destination>/highonly/', defaults={'highonly': True, 'nohigh': False})
+@app.route('/route/<source>/<int:destination>/nohigh/', defaults={'highonly': False, 'nohigh': True})
 @handleLookupError
 @cached
-def route_si(source, destination):
+def route_si(source, destination, highonly, nohigh):
     i_source = sys_to_id(source)
-    return route_ii(i_source, destination)
+    return route_ii(i_source, destination, highonly, nohigh)
 
-@app.route('/route/<int:source>/<destination>/')
+@app.route('/route/<int:source>/<destination>/', defaults={'highonly': False, 'nohigh': False})
+@app.route('/route/<int:source>/<destination>/highonly/', defaults={'highonly': True, 'nohigh': False})
+@app.route('/route/<int:source>/<destination>/nohigh/', defaults={'highonly': False, 'nohigh': True})
 @handleLookupError
 @cached
-def route_is(source, destination):
+def route_is(source, destination, highonly, nohigh):
     i_destination = sys_to_id(destination)
-    return route_ii(source, i_destination)
+    return route_ii(source, i_destination, highonly, nohigh)
 
-@app.route('/route/<source>/<destination>/')
+@app.route('/route/<source>/<destination>/', defaults={'highonly': False, 'nohigh': False})
+@app.route('/route/<source>/<destination>/highonly/', defaults={'highonly': True, 'nohigh': False})
+@app.route('/route/<source>/<destination>/nohigh/', defaults={'highonly': False, 'nohigh': True})
 @handleLookupError
 @cached
-def route_ss(source, destination):
+def route_ss(source, destination, highonly, nohigh):
     i_source = sys_to_id(source)
     i_destination = sys_to_id(destination)
-    return route_ii(i_source, i_destination)
+    return route_ii(i_source, i_destination, highonly, nohigh)
 
 # Same as the above methods, except the source is a station name or ID.
-@app.route('/route/station/<int:source>/<int:destination>/')
+@app.route('/route/station/<int:source>/<int:destination>/', defaults={'highonly': False, 'nohigh': False})
+@app.route('/route/station/<int:source>/<int:destination>/highonly/', defaults={'highonly': True, 'nohigh': False})
+@app.route('/route/station/<int:source>/<int:destination>/nohigh/', defaults={'highonly': False, 'nohigh': True})
 @handleLookupError
 @cached
-def route_station_ii(source, destination):
+def route_station_ii(source, destination, highonly, nohigh):
     sysid_source = staid_to_sysid(source)
     sysid_destination = staid_to_sysid(destination)
-    return route_ii(sysid_source, sysid_destination)
+    return route_ii(sysid_source, sysid_destination, highonly, nohigh)
 
-@app.route('/route/station/<source>/<int:destination>/')
+@app.route('/route/station/<source>/<int:destination>/', defaults={'highonly': False, 'nohigh': False})
+@app.route('/route/station/<source>/<int:destination>/highonly/', defaults={'highonly': True, 'nohigh': False})
+@app.route('/route/station/<source>/<int:destination>/nohigh/', defaults={'highonly': False, 'nohigh': True})
 @handleLookupError
 @cached
-def route_station_si(source, destination):
+def route_station_si(source, destination, highonly, nohigh):
     sysid_source = sta_to_sysid(source)
     sysid_destination = staid_to_sysid(destination)
-    return route_ii(sysid_source, sysid_destination)
+    return route_ii(sysid_source, sysid_destination, highonly, nohigh)
 
-@app.route('/route/station/<int:source>/<destination>/')
+@app.route('/route/station/<int:source>/<destination>/', defaults={'highonly': False, 'nohigh': False})
+@app.route('/route/station/<int:source>/<destination>/highonly/', defaults={'highonly': True, 'nohigh': False})
+@app.route('/route/station/<int:source>/<destination>/nohigh/', defaults={'highonly': False, 'nohigh': True})
 @handleLookupError
 @cached
-def route_station_is(source, destination):
+def route_station_is(source, destination, highonly, nohigh):
     sysid_source = staid_to_sysid(source)
     sysid_destination = sta_to_sysid(destination)
-    return route_ii(sysid_source, sysid_destination)
+    return route_ii(sysid_source, sysid_destination, highonly, nohigh)
 
-@app.route('/route/station/<source>/<destination>/')
+@app.route('/route/station/<source>/<destination>/', defaults={'highonly': False, 'nohigh': False})
+@app.route('/route/station/<source>/<destination>/highonly/', defaults={'highonly': True, 'nohigh': False})
+@app.route('/route/station/<source>/<destination>/nohigh/', defaults={'highonly': False, 'nohigh': True})
 @handleLookupError
 @cached
-def route_station_ss(source, destination):
+def route_station_ss(source, destination, highonly, nohigh):
     sysid_source = sta_to_sysid(source)
     sysid_destination = sta_to_sysid(destination)
-    return route_ii(sysid_source, sysid_destination)
+    return route_ii(sysid_source, sysid_destination, highonly, nohigh)
 
 # This set of methods handles the jump counts. Ints are needed, but strings can be supplied.
 # The route method is appended with two letters that describe the type of parameters.
-@app.route('/jump/<int:source>/<int:destination>/')
+@app.route('/jump/<int:source>/<int:destination>/', defaults={'highonly': False, 'nohigh': False})
+@app.route('/jump/<int:source>/<int:destination>/highonly/', defaults={'highonly': True, 'nohigh': False})
+@app.route('/jump/<int:source>/<int:destination>/nohigh/', defaults={'highonly': False, 'nohigh': True})
 @handleLookupError
 @cached
-def jump_ii(source, destination):
-    g = SystemGraph()
+def jump_ii(source, destination, highonly, nohigh):
+    g = SystemGraph(highonly, nohigh)
     jumps = g.distance(source, destination)
     return jsonify(jumps=jumps)
 
-@app.route('/jump/<source>/<int:destination>/')
+@app.route('/jump/<source>/<int:destination>/', defaults={'highonly': False, 'nohigh': False})
+@app.route('/jump/<source>/<int:destination>/highonly/', defaults={'highonly': True, 'nohigh': False})
+@app.route('/jump/<source>/<int:destination>/nohigh/', defaults={'highonly': False, 'nohigh': True})
 @handleLookupError
 @cached
-def jump_si(source, destination):
+def jump_si(source, destination, highonly, nohigh):
     i_source = sys_to_id(source)
-    return jump_ii(i_source, destination)
+    return jump_ii(i_source, destination, highonly, nohigh)
 
-@app.route('/jump/<int:source>/<destination>/')
+@app.route('/jump/<int:source>/<destination>/', defaults={'highonly': False, 'nohigh': False})
+@app.route('/jump/<int:source>/<destination>/highonly/', defaults={'highonly': True, 'nohigh': False})
+@app.route('/jump/<int:source>/<destination>/nohigh/', defaults={'highonly': False, 'nohigh': True})
 @handleLookupError
 @cached
-def jump_is(source, destination):
+def jump_is(source, destination, highonly, nohigh):
     i_destination = sys_to_id(destination)
-    return jump_ii(source, i_destination)
+    return jump_ii(source, i_destination, highonly, nohigh)
 
-@app.route('/jump/<source>/<destination>/')
+@app.route('/jump/<source>/<destination>/', defaults={'highonly': False, 'nohigh': False})
+@app.route('/jump/<source>/<destination>/highonly/', defaults={'highonly': True, 'nohigh': False})
+@app.route('/jump/<source>/<destination>/nohigh/', defaults={'highonly': False, 'nohigh': True})
 @handleLookupError
 @cached
-def jump_ss(source, destination):
+def jump_ss(source, destination, highonly, nohigh):
     i_source = sys_to_id(source)
     i_destination = sys_to_id(destination)
-    return jump_ii(i_source, i_destination)
+    return jump_ii(i_source, i_destination, highonly, nohigh)
 
 # Same as the above methods, except the source is a station name or ID.
-@app.route('/jump/station/<int:source>/<int:destination>/')
+@app.route('/jump/station/<int:source>/<int:destination>/', defaults={'highonly': False, 'nohigh': False})
+@app.route('/jump/station/<int:source>/<int:destination>/highonly/', defaults={'highonly': True, 'nohigh': False})
+@app.route('/jump/station/<int:source>/<int:destination>/nohigh/', defaults={'highonly': False, 'nohigh': True})
 @handleLookupError
 @cached
-def jump_station_ii(source, destination):
+def jump_station_ii(source, destination, highonly, nohigh):
     sysid_source = staid_to_sysid(source)
     sysid_destination = staid_to_sysid(destination)
-    return jump_ii(sysid_source, sysid_destination)
+    return jump_ii(sysid_source, sysid_destination, highonly, nohigh)
 
-@app.route('/jump/station/<source>/<int:destination>/')
+@app.route('/jump/station/<source>/<int:destination>/', defaults={'highonly': False, 'nohigh': False})
+@app.route('/jump/station/<source>/<int:destination>/highonly/', defaults={'highonly': True, 'nohigh': False})
+@app.route('/jump/station/<source>/<int:destination>/nohigh/', defaults={'highonly': False, 'nohigh': True})
 @handleLookupError
 @cached
-def jump_station_si(source, destination):
+def jump_station_si(source, destination, highonly, nohigh):
     sysid_source = sta_to_sysid(source)
     sysid_destination = staid_to_sysid(destination)
-    return jump_ii(sysid_source, sysid_destination)
+    return jump_ii(sysid_source, sysid_destination, highonly, nohigh)
 
-@app.route('/jump/station/<int:source>/<destination>/')
+@app.route('/jump/station/<int:source>/<destination>/', defaults={'highonly': False, 'nohigh': False})
+@app.route('/jump/station/<int:source>/<destination>/highonly/', defaults={'highonly': True, 'nohigh': False})
+@app.route('/jump/station/<int:source>/<destination>/nohigh/', defaults={'highonly': False, 'nohigh': True})
 @handleLookupError
 @cached
-def jump_station_is(source, destination):
+def jump_station_is(source, destination, highonly, nohigh):
     sysid_source = staid_to_sysid(source)
     sysid_destination = sta_to_sysid(destination)
-    return jump_ii(sysid_source, sysid_destination)
+    return jump_ii(sysid_source, sysid_destination, highonly, nohigh)
 
-@app.route('/jump/station/<source>/<destination>/')
+@app.route('/jump/station/<source>/<destination>/', defaults={'highonly': False, 'nohigh': False})
+@app.route('/jump/station/<source>/<destination>/highonly/', defaults={'highonly': True, 'nohigh': False})
+@app.route('/jump/station/<source>/<destination>/nohigh/', defaults={'highonly': False, 'nohigh': True})
 @handleLookupError
 @cached
-def jump_station_ss(source, destination):
+def jump_station_ss(source, destination, highonly, nohigh):
     sysid_source = sta_to_sysid(source)
     sysid_destination = sta_to_sysid(destination)
-    return jump_ii(sysid_source, sysid_destination)
+    return jump_ii(sysid_source, sysid_destination, highonly, nohigh)
 
 def industry(names=False, rigs=True, category=-1, detail=-1):
     if not category in (-1, 6, 7, 8, 18, 22):
