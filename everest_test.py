@@ -245,6 +245,43 @@ class IndustryTestCase(unittest.TestCase):
             result = ''.join(response.data.split())
             self.assertEquals(test['expected'], result)
 
+class SecAvoidanceTestCase(unittest.TestCase):
+    @classmethod
+    def setUpClass(self):
+        self.app = everest.app.test_client()
+
+        self.data = [{
+            'url': '/route/Friggi/Kiainti/',
+            'expected': ''.join(json.dumps({'count': 3, 'route': [{'id': 30000168, 'name': 'Friggi'}, {'id': 30000169, 'name': 'Ihakana'}, {'id': 30000194, 'name': 'Otsela'}, {'id': 30000189, 'name': 'Kiainti'}] }).split())
+        },{
+            'url': '/route/Friggi/Kiainti/highonly/',
+            'expected': ''.join(json.dumps({'count': 14, 'route': [{'id': 30000168, 'name': 'Friggi'}, {'id': 30000166, 'name': 'Airmia'}, {'id': 30000165, 'name': 'Ishisomo'}, {'id': 30000158, 'name': 'Olo'}, {'id': 30000155, 'name': 'Obanen'}, {'id': 30000153, 'name': 'Poinen'}, {'id': 30000131, 'name': 'Nomaa'}, {'id': 30000146, 'name': 'Saisio'}, {'id': 30000148, 'name': 'Jakanerva'}, {'id': 30000149, 'name': 'Gekutami'}, {'id': 30000151, 'name': 'Uoyonen'}, {'id': 30000173, 'name': 'Vattuolen'}, {'id': 30000178, 'name': 'Akkilen'}, {'id': 30000188, 'name': 'Hentogaira'}, {'id': 30000189, 'name': 'Kiainti'}] }).split())
+        },{
+            'url': '/jump/Friggi/Kiainti/',
+            'expected': ''.join(json.dumps({ 'jumps': 3 }).split())
+        },{
+            'url': '/jump/Friggi/Kiainti/highonly/',
+            'expected': ''.join(json.dumps({ 'jumps': 14 }).split())
+        },{
+            'url': '/route/Hasama/Kinakka/',
+            'expected': ''.join(json.dumps({ 'count': 7, 'route': [{'id': 30002758, 'name': 'Hasama'}, {'id': 30001388, 'name': 'Mara'}, {'id': 30001402, 'name': 'Passari'}, {'id': 30001400, 'name': 'Litiura'}, {'id': 30001399, 'name': 'Elonaya'}, {'id': 30001403, 'name': 'Piak'}, {'id': 30045324, 'name': 'Onnamon'}, {'id': 30045314, 'name': 'Kinakka'}] }).split())
+        },{
+            'url': '/route/Hasama/Kinakka/nohigh/',
+            'expected': ''.join(json.dumps({ 'count': 16, 'route': [{'id': 30002758, 'name': 'Hasama'}, {'id': 30002757, 'name': 'Nikkishina'}, {'id': 30002756, 'name': 'Ishomilken'}, {'id': 30002759, 'name': 'Uuna'}, {'id': 30002760, 'name': 'Manjonakko'}, {'id': 30045334, 'name': 'Mushikegi'}, {'id': 30045330, 'name': 'Okkamon'}, {'id': 30045354, 'name': 'Reitsato'}, {'id': 30045349, 'name': 'Rakapas'}, {'id': 30045353, 'name': 'Pynekastoh'}, {'id': 30045338, 'name': 'Hikkoken'}, {'id': 30045344, 'name': 'Nennamaila'}, {'id': 30045342, 'name': 'Akidagi'}, {'id': 30045340, 'name': 'Aivonen'}, {'id': 30045320, 'name': 'Pavanakka'}, {'id': 30045316, 'name': 'Innia'}, {'id': 30045314, 'name': 'Kinakka'}] }).split())
+        },{
+            'url': '/jump/Hasama/Kinakka/',
+            'expected': ''.join(json.dumps({ 'jumps': 7 }).split())
+        },{
+            'url': '/jump/Hasama/Kinakka/nohigh/',
+            'expected': ''.join(json.dumps({ 'jumps': 16 }).split())
+        }]
+
+    def runTest(self):
+        for test in self.data:
+            response = self.app.get(test['url'])
+            result = ''.join(response.data.split())
+            self.assertEquals(test['expected'], result)
+
 if __name__ == '__main__':
     suite = unittest.TestSuite()
     suite.addTest(RouteTestCase())
@@ -253,4 +290,5 @@ if __name__ == '__main__':
     suite.addTest(JumpStationTestCase())
     suite.addTest(BatchTestCase())
     suite.addTest(IndustryTestCase())
+    suite.addTest(SecAvoidanceTestCase())
     unittest.TextTestRunner(verbosity=2).run(suite)
