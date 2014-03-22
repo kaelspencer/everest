@@ -10,22 +10,22 @@ class RouteTestCase(unittest.TestCase):
         expected = ''.join(json.dumps({
               "count": 15,
               "route": [
-                {"id": 30000142, "name": "Jita"},
-                {"id": 30000144, "name": "Perimeter"},
-                {"id": 30002642, "name": "Iyen-Oursta"},
-                {"id": 30002643, "name": "Faurent"},
-                {"id": 30002644, "name": "Ambeke"},
-                {"id": 30002691, "name": "Crielere"},
-                {"id": 30002718, "name": "Rancer"},
-                {"id": 30002719, "name": "Miroitem"},
-                {"id": 30002723, "name": "Otou"},
-                {"id": 30002053, "name": "Hek"},
-                {"id": 30002543, "name": "Eystur"},
-                {"id": 30002544, "name": "Pator"},
-                {"id": 30002568, "name": "Onga"},
-                {"id": 30002529, "name": "Gyng"},
-                {"id": 30002526, "name": "Frarn"},
-                {"id": 30002510, "name": "Rens"}
+                {"id": 30000142, "name": "Jita", "sec": 0.9},
+                {"id": 30000144, "name": "Perimeter", "sec": 1.0},
+                {"id": 30002642, "name": "Iyen-Oursta", "sec": 0.8},
+                {"id": 30002643, "name": "Faurent", "sec": 0.5},
+                {"id": 30002644, "name": "Ambeke", "sec": 0.5},
+                {"id": 30002691, "name": "Crielere", "sec": 0.4},
+                {"id": 30002718, "name": "Rancer", "sec": 0.4},
+                {"id": 30002719, "name": "Miroitem", "sec": 0.3},
+                {"id": 30002723, "name": "Otou", "sec": 0.3},
+                {"id": 30002053, "name": "Hek", "sec": 0.5},
+                {"id": 30002543, "name": "Eystur", "sec": 0.9},
+                {"id": 30002544, "name": "Pator", "sec": 1.0},
+                {"id": 30002568, "name": "Onga", "sec": 1.0},
+                {"id": 30002529, "name": "Gyng", "sec": 0.8},
+                {"id": 30002526, "name": "Frarn", "sec": 0.8},
+                {"id": 30002510, "name": "Rens", "sec": 0.9}
               ]
             }).split())
         self.data = [{
@@ -56,22 +56,22 @@ class RouteStationTestCase(unittest.TestCase):
         expected = ''.join(json.dumps({
               "count": 15,
               "route": [
-                {"id": 30000142, "name": "Jita"},
-                {"id": 30000144, "name": "Perimeter"},
-                {"id": 30002642, "name": "Iyen-Oursta"},
-                {"id": 30002643, "name": "Faurent"},
-                {"id": 30002644, "name": "Ambeke"},
-                {"id": 30002691, "name": "Crielere"},
-                {"id": 30002718, "name": "Rancer"},
-                {"id": 30002719, "name": "Miroitem"},
-                {"id": 30002723, "name": "Otou"},
-                {"id": 30002053, "name": "Hek"},
-                {"id": 30002543, "name": "Eystur"},
-                {"id": 30002544, "name": "Pator"},
-                {"id": 30002568, "name": "Onga"},
-                {"id": 30002529, "name": "Gyng"},
-                {"id": 30002526, "name": "Frarn"},
-                {"id": 30002510, "name": "Rens"}
+                {"id": 30000142, "name": "Jita", "sec": 0.9},
+                {"id": 30000144, "name": "Perimeter", "sec": 1.0},
+                {"id": 30002642, "name": "Iyen-Oursta", "sec": 0.8},
+                {"id": 30002643, "name": "Faurent", "sec": 0.5},
+                {"id": 30002644, "name": "Ambeke", "sec": 0.5},
+                {"id": 30002691, "name": "Crielere", "sec": 0.4},
+                {"id": 30002718, "name": "Rancer", "sec": 0.4},
+                {"id": 30002719, "name": "Miroitem", "sec": 0.3},
+                {"id": 30002723, "name": "Otou", "sec": 0.3},
+                {"id": 30002053, "name": "Hek", "sec": 0.5},
+                {"id": 30002543, "name": "Eystur", "sec": 0.9},
+                {"id": 30002544, "name": "Pator", "sec": 1.0},
+                {"id": 30002568, "name": "Onga", "sec": 1.0},
+                {"id": 30002529, "name": "Gyng", "sec": 0.8},
+                {"id": 30002526, "name": "Frarn", "sec": 0.8},
+                {"id": 30002510, "name": "Rens", "sec": 0.9}
               ]
             }).split())
         self.data = [{
@@ -252,10 +252,10 @@ class SecAvoidanceTestCase(unittest.TestCase):
 
         self.data = [{
             'url': '/route/Friggi/Kiainti/',
-            'expected': ''.join(json.dumps({'count': 3, 'route': [{'id': 30000168, 'name': 'Friggi'}, {'id': 30000169, 'name': 'Ihakana'}, {'id': 30000194, 'name': 'Otsela'}, {'id': 30000189, 'name': 'Kiainti'}] }).split())
+            'expected': ''.join(json.dumps({'count': 3, 'route': [{'id': 30000168, 'name': 'Friggi', 'sec': 0.5 }, {'id': 30000169, 'name': 'Ihakana', 'sec': 0.4 }, {'id': 30000194, 'name': 'Otsela', 'sec': 0.4 }, {'id': 30000189, 'name': 'Kiainti', 'sec': 0.5 }] }).split())
         },{
             'url': '/route/Friggi/Kiainti/highonly/',
-            'expected': ''.join(json.dumps({'count': 14, 'route': [{'id': 30000168, 'name': 'Friggi'}, {'id': 30000166, 'name': 'Airmia'}, {'id': 30000165, 'name': 'Ishisomo'}, {'id': 30000158, 'name': 'Olo'}, {'id': 30000155, 'name': 'Obanen'}, {'id': 30000153, 'name': 'Poinen'}, {'id': 30000131, 'name': 'Nomaa'}, {'id': 30000146, 'name': 'Saisio'}, {'id': 30000148, 'name': 'Jakanerva'}, {'id': 30000149, 'name': 'Gekutami'}, {'id': 30000151, 'name': 'Uoyonen'}, {'id': 30000173, 'name': 'Vattuolen'}, {'id': 30000178, 'name': 'Akkilen'}, {'id': 30000188, 'name': 'Hentogaira'}, {'id': 30000189, 'name': 'Kiainti'}] }).split())
+            'expected': ''.join(json.dumps({'count': 14, 'route': [{'id': 30000168, 'name': 'Friggi', 'sec': 0.5 }, {'id': 30000166, 'name': 'Airmia', 'sec': 0.6 }, {'id': 30000165, 'name': 'Ishisomo', 'sec': 0.7 }, {'id': 30000158, 'name': 'Olo', 'sec': 0.7 }, {'id': 30000155, 'name': 'Obanen', 'sec': 0.6 }, {'id': 30000153, 'name': 'Poinen', 'sec': 0.6 }, {'id': 30000131, 'name': 'Nomaa', 'sec': 0.6 }, {'id': 30000146, 'name': 'Saisio', 'sec': 0.7 }, {'id': 30000148, 'name': 'Jakanerva', 'sec': 0.7 }, {'id': 30000149, 'name': 'Gekutami', 'sec': 0.7 }, {'id': 30000151, 'name': 'Uoyonen', 'sec': 0.7 }, {'id': 30000173, 'name': 'Vattuolen', 'sec': 0.7 }, {'id': 30000178, 'name': 'Akkilen', 'sec': 0.7 }, {'id': 30000188, 'name': 'Hentogaira', 'sec': 0.6 }, {'id': 30000189, 'name': 'Kiainti', 'sec': 0.5 }] }).split())
         },{
             'url': '/jump/Friggi/Kiainti/',
             'expected': ''.join(json.dumps({ 'jumps': 3 }).split())
@@ -264,10 +264,10 @@ class SecAvoidanceTestCase(unittest.TestCase):
             'expected': ''.join(json.dumps({ 'jumps': 14 }).split())
         },{
             'url': '/route/Hasama/Kinakka/',
-            'expected': ''.join(json.dumps({ 'count': 7, 'route': [{'id': 30002758, 'name': 'Hasama'}, {'id': 30001388, 'name': 'Mara'}, {'id': 30001402, 'name': 'Passari'}, {'id': 30001400, 'name': 'Litiura'}, {'id': 30001399, 'name': 'Elonaya'}, {'id': 30001403, 'name': 'Piak'}, {'id': 30045324, 'name': 'Onnamon'}, {'id': 30045314, 'name': 'Kinakka'}] }).split())
+            'expected': ''.join(json.dumps({'count': 7, 'route': [{'id': 30002758, 'name': 'Hasama', 'sec': 0.3 }, {'id': 30001388, 'name': 'Mara', 'sec': 0.4 }, {'id': 30001402, 'name': 'Passari', 'sec': 0.4 }, {'id': 30001400, 'name': 'Litiura', 'sec': 0.5 }, {'id': 30001399, 'name': 'Elonaya', 'sec': 0.7 }, {'id': 30001403, 'name': 'Piak', 'sec': 0.7 }, {'id': 30045324, 'name': 'Onnamon', 'sec': 0.6 }, {'id': 30045314, 'name': 'Kinakka', 'sec': 0.4 }] }).split())
         },{
             'url': '/route/Hasama/Kinakka/nohigh/',
-            'expected': ''.join(json.dumps({ 'count': 16, 'route': [{'id': 30002758, 'name': 'Hasama'}, {'id': 30002757, 'name': 'Nikkishina'}, {'id': 30002756, 'name': 'Ishomilken'}, {'id': 30002759, 'name': 'Uuna'}, {'id': 30002760, 'name': 'Manjonakko'}, {'id': 30045334, 'name': 'Mushikegi'}, {'id': 30045330, 'name': 'Okkamon'}, {'id': 30045354, 'name': 'Reitsato'}, {'id': 30045349, 'name': 'Rakapas'}, {'id': 30045353, 'name': 'Pynekastoh'}, {'id': 30045338, 'name': 'Hikkoken'}, {'id': 30045344, 'name': 'Nennamaila'}, {'id': 30045342, 'name': 'Akidagi'}, {'id': 30045340, 'name': 'Aivonen'}, {'id': 30045320, 'name': 'Pavanakka'}, {'id': 30045316, 'name': 'Innia'}, {'id': 30045314, 'name': 'Kinakka'}] }).split())
+            'expected': ''.join(json.dumps({'count': 16, 'route': [{'id': 30002758, 'name': 'Hasama', 'sec': 0.3 }, {'id': 30002757, 'name': 'Nikkishina', 'sec': 0.4 }, {'id': 30002756, 'name': 'Ishomilken', 'sec': 0.4 }, {'id': 30002759, 'name': 'Uuna', 'sec': 0.4 }, {'id': 30002760, 'name': 'Manjonakko', 'sec': 0.3 }, {'id': 30045334, 'name': 'Mushikegi', 'sec': 0.4 }, {'id': 30045330, 'name': 'Okkamon', 'sec': 0.3 }, {'id': 30045354, 'name': 'Reitsato', 'sec': 0.2 }, {'id': 30045349, 'name': 'Rakapas', 'sec': 0.2 }, {'id': 30045353, 'name': 'Pynekastoh', 'sec': 0.2 }, {'id': 30045338, 'name': 'Hikkoken', 'sec': 0.3 }, {'id': 30045344, 'name': 'Nennamaila', 'sec': 0.3 }, {'id': 30045342, 'name': 'Akidagi', 'sec': 0.4 }, {'id': 30045340, 'name': 'Aivonen', 'sec': 0.4 }, {'id': 30045320, 'name': 'Pavanakka', 'sec': 0.4 }, {'id': 30045316, 'name': 'Innia', 'sec': 0.3 }, {'id': 30045314, 'name': 'Kinakka', 'sec': 0.4 }] }).split())
         },{
             'url': '/jump/Hasama/Kinakka/',
             'expected': ''.join(json.dumps({ 'jumps': 7 }).split())

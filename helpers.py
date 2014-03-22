@@ -19,14 +19,10 @@ def staid_to_sysid(station):
 # Converts a list of system IDs to system objects.
 def sysid_list_to_object(sysids):
     objs = []
-    for sys in sysids:
-        objs.append(sysid_to_object(sys))
+    for sysid in sysids:
+        row = get_one('select solarSystemID, solarSystemName, round(security, 1) from mapSolarSystems where solarSystemID = %(system)s', { 'system': sysid })
+        objs.append({ 'id': row[0], 'name': row[1], 'sec': row[2] })
     return objs
-
-# Converts a system ID to a system object.
-def sysid_to_object(sysid):
-    row = get_one('select solarSystemID, solarSystemName from mapSolarSystems where solarSystemID = %(system)s', { 'system': sysid })
-    return { 'id': row[0], 'name': row[1] }
 
 # The source could be either a system or station. Turn it into a system ID.
 # A number passed in won't return an error. If it's not a station ID it's assumed to be a system ID.
