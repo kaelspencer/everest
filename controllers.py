@@ -55,6 +55,17 @@ def jump():
         print 'Aborting: request does not have source and\or destination.'
         abort(400)
 
+    highonly = False
+    nohigh = False
+
+    if 'avoidance' in request.json:
+        if request.json['avoidance'] == 'high':
+            nohigh = True
+        elif request.json['avoidance'] == 'highonly':
+            highonly = True
+        elif request.json['avoidance'] != 'none':
+            print 'Aborting: unknown avoidance value: %s' % request.json['avoidance']
+
     g = None
     source = location_lookup(request.json['source'])
     results = []
@@ -74,10 +85,14 @@ def jump():
             results.append({ 'destination': dest, 'jumps': cv })
         else:
             if g is None:
-                g = SystemGraph()
-            jumps = len(g.route(source, destid)) - 1
-            cache.set(cache_key, jumps)
-            results.append({ 'destination': dest, 'jumps': jumps })
+                g = SystemGraph(highonly, nohigh)
+
+            try:
+                jumps = len(g.route(source, destid)) - 1
+                cache.set(cache_key, jumps)
+                results.append({ 'destination': dest, 'jumps': jumps })
+            except LookupError:
+                results.append({ 'destination': dest, 'jumps': -1 })
 
     return jsonify(source=request.json['source'], destinations=results)
 

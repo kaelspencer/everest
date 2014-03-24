@@ -274,11 +274,30 @@ class SecAvoidanceTestCase(unittest.TestCase):
         },{
             'url': '/jump/Hasama/Kinakka/nohigh/',
             'expected': ''.join(json.dumps({ 'jumps': 16 }).split())
+        },{
+            'url': '/jump/batch/',
+            'json': json.dumps({ 'source': 'Friggi', 'destinations': ['Kiainti', 'Kinakka'], 'avoidance': 'none' }),
+            'expected': ''.join(json.dumps({ 'destinations': [{'destination': 'Kiainti', 'jumps': 3 }, {'destination': 'Kinakka', 'jumps': 15 }], 'source': 'Friggi' }).split())
+        },{
+            'url': '/jump/batch/',
+            'json': json.dumps({ 'source': 'Friggi', 'destinations': ['Kiainti', 'Kinakka'], 'avoidance': 'highonly' }),
+            'expected': ''.join(json.dumps({ 'destinations': [{'destination': 'Kiainti', 'jumps': 14 }, {'destination': 'Kinakka', 'jumps': -1 }], 'source': 'Friggi' }).split())
+        },{
+            'url': '/jump/batch/',
+            'json': json.dumps({ 'source': 'Hasama', 'destinations': ['Jita', 'Kinakka'], 'avoidance': 'none' }),
+            'expected': ''.join(json.dumps({ 'destinations': [{'destination': 'Jita', 'jumps': 6 }, {'destination': 'Kinakka', 'jumps': 7 }], 'source': 'Hasama' }).split())
+        },{
+            'url': '/jump/batch/',
+            'json': json.dumps({ 'source': 'Hasama', 'destinations': ['Jita', 'Kinakka'], 'avoidance': 'high' }),
+            'expected': ''.join(json.dumps({ 'destinations': [{'destination': 'Jita', 'jumps': -1 }, {'destination': 'Kinakka', 'jumps': 16 }], 'source': 'Hasama' }).split())
         }]
 
     def runTest(self):
         for test in self.data:
-            response = self.app.get(test['url'])
+            if 'json' in test:
+                response = self.app.post(test['url'], content_type='application/json', data=test['json'])
+            else:
+                response = self.app.get(test['url'])
             result = ''.join(response.data.split())
             self.assertEquals(test['expected'], result)
 
