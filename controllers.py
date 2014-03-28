@@ -78,7 +78,13 @@ def jump():
             results.append({ 'destination': dest, 'jumps': -1 })
             continue
 
-        cache_key = str(source) + '_' + str(destid)
+        avoidance_key = ''
+        if highonly:
+            avoidance_key = '_highonly'
+        elif nohigh:
+            avoidance_key = '_nohigh'
+
+        cache_key = str(source) + '_' + str(destid) + avoidance_key
 
         cv = cache.get(cache_key)
         if cv is not None:
