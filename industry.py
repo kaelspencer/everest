@@ -3,8 +3,10 @@ from db import get_all, get_one
 
 class Industry():
     def __init__(self, names=False, category=-1, rigs=True, detail=-1):
-        # This query gets inventable items. If category is -1 (default), all inventable items are retrieved. Otherwise, only the requested category is returned. Expected categories: 6, 7, 8, 18, 22.
-        # If detail is set it must be an itemid and that will be all the information that is returned.
+        # This query gets inventable items. If category is -1 (default), all inventable items are
+        # retrieved. Otherwise, only the requested category is returned. Expected categories: 6, 7,
+        # 8, 18, 22.If detail is set it must be an itemid and that will be all the information that
+        # is returned.
         if detail != -1:
             self.inventable_items = [[detail]]
         elif category != -1:
@@ -230,7 +232,15 @@ from dgmTypeAttributes
 where attributeID=1115 and typeID=
 (select it2.typeid
 from invTypes,invGroups,invMetaTypes,ramTypeRequirements,invBlueprintTypes,invTypes it2
-where invTypes.typeid=invMetaTypes.typeid and invMetaTypes.metaGroupId=2 and invGroups.groupid=invTypes.groupid and invBlueprintTypes.blueprintTypeID=ramTypeRequirements.typeid and invBlueprintTypes.productTypeID=invMetaTypes.parenttypeid and it2.typeid=requiredTypeID and activityID=8 and it2.groupID=716 and invTypes.typeid=%s)''',
+where invTypes.typeid=invMetaTypes.typeid
+    and invMetaTypes.metaGroupId=2
+    and invGroups.groupid=invTypes.groupid
+    and invBlueprintTypes.blueprintTypeID=ramTypeRequirements.typeid
+    and invBlueprintTypes.productTypeID=invMetaTypes.parenttypeid
+    and it2.typeid=requiredTypeID
+    and activityID=8
+    and it2.groupID=716
+    and invTypes.typeid=%s)''',
     'valueInt': 0
 }
 
@@ -239,7 +249,15 @@ g_datacores = {
     'sql': '''
 select it2.typeid,it2.typename,quantity
 from invTypes,invGroups,invMetaTypes,ramTypeRequirements,invBlueprintTypes,invTypes it2
-where invTypes.typeid=invMetaTypes.typeid and invMetaTypes.metaGroupId=2 and invGroups.groupid=invTypes.groupid and invBlueprintTypes.blueprintTypeID=ramTypeRequirements.typeid and invBlueprintTypes.productTypeID=invMetaTypes.parenttypeid and it2.typeid=requiredTypeID and activityID=8 and it2.groupID!=716 and invTypes.typeid=%s''',
+where invTypes.typeid=invMetaTypes.typeid
+    and invMetaTypes.metaGroupId=2
+    and invGroups.groupid=invTypes.groupid
+    and invBlueprintTypes.blueprintTypeID=ramTypeRequirements.typeid
+    and invBlueprintTypes.productTypeID=invMetaTypes.parenttypeid
+    and it2.typeid=requiredTypeID
+    and activityID=8
+    and it2.groupID!=716
+    and invTypes.typeid=%s''',
     'typeID': 0,
     'typeName': 1,
     'quantity': 2
