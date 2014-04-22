@@ -274,45 +274,30 @@ def industry(names=False, rigs=True, category=-1, detail=-1):
     items = i.fetch()
     return jsonify(items=items)
 
-@app.route('/industry/all/')
+@app.route('/industry/all/', defaults={'names': False})
+@app.route('/industry/all/names/', defaults={'names': True})
 @handleLookupError
-def industry_all():
-    return industry()
+def industry_all(names):
+    return industry(names=names)
 
-@app.route('/industry/all/names/')
+@app.route('/industry/norigs/', defaults={'names': False})
+@app.route('/industry/norigs/names/', defaults={'names': True})
 @handleLookupError
-def industry_names():
-    return industry(names=True)
+def industry_norigs(names):
+    return industry(rigs=False, names=names)
 
-@app.route('/industry/norigs/')
+@app.route('/industry/<int:category>/', defaults={'names': False})
+@app.route('/industry/<int:category>/names/', defaults={'names': True})
 @handleLookupError
-def industry_norigs():
-    return industry(rigs=False)
+def industry_category(category, names):
+    return industry(category=category, names=names)
 
-@app.route('/industry/norigs/names/')
+# TODO: Update this on client.
+@app.route('/industry/detail/<int:itemid>/', defaults={'names': False})
+@app.route('/industry/detail/<int:itemid>/names/', defaults={'names': True})
 @handleLookupError
-def industry_norigs_names():
-    return industry(names=True, rigs=False)
-
-@app.route('/industry/<int:category>/')
-@handleLookupError
-def industry_category(category):
-    return industry(category=category)
-
-@app.route('/industry/<int:category>/names/')
-@handleLookupError
-def industry_category_names(category):
-    return industry(names=True, category=category)
-
-@app.route('/industry/detail/<int:itemid>/')
-@handleLookupError
-def industry_detail(itemid):
-    return industry(detail=itemid)
-
-@app.route('/industry/detail/names/<int:itemid>/')
-@handleLookupError
-def industry_detail_names(itemid):
-    return industry(names=True, detail=itemid)
+def industry_detail(itemid, names):
+    return industry(detail=itemid, names=names)
 
 @app.after_request
 @crossdomain(origin='*', headers=['Origin', 'X-Requested-With', 'Content-Type', 'Accept'])
