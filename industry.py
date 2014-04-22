@@ -201,7 +201,7 @@ where invTypes.typeID=invMetaTypes.typeID
     and invMetaTypes.metaGroupId=2
     and invGroups.groupID=invTypes.groupID
     and invTypes.published=1
-    and invGroups.groupName not like "%%rig%%"
+    and invGroups.groupName not like "Rig%%"
 order by invGroups.categoryID, invTypes.typeName''',
     'typeID': 0,
     'typeName': 1,
