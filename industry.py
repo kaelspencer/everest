@@ -2,19 +2,16 @@ from app import app
 from db import get_all, get_one
 
 class Industry():
-    def __init__(self, names=False, category=-1, rigs=True, detail=-1):
-        # This query gets inventable items. If category is -1 (default), all inventable items are
-        # retrieved. Otherwise, only the requested category is returned. Expected categories: 6, 7,
-        # 8, 18, 22.If detail is set it must be an itemid and that will be all the information that
-        # is returned.
+    def __init__(self, names=False, categories=[0], rigs=True, detail=-1):
+        # This query gets inventable items. Categories is an array of category IDs. [0] is the
+        # default and represents all categories. Expected categories: 6, 7, 8, 18, 22. If detail
+        # is set it must be an itemid and that will be all the information that is returned.
         if detail != -1:
             self.inventable_items = [[detail]]
-        elif category != -1:
-            self.inventable_items = get_all(g_inventable_category['sql'], (category))
         elif rigs == False:
-            self.inventable_items = get_all(g_inventable_no_rigs['sql'], ())
+            self.inventable_items = get_all(g_inventable_no_rigs['sql'], (','.join(map(str, categories))))
         else:
-            self.inventable_items = get_all(g_inventable_all['sql'], ())
+            self.inventable_items = get_all(g_inventable_categories['sql'], (','.join(map(str, categories))))
 
         self.items = dict()
         self.names = names
@@ -115,7 +112,7 @@ class Industry():
 
     def fetch(self):
         for item in self.inventable_items:
-            typeid = item[g_inventable_all['typeID']]
+            typeid = item[g_inventable_categories['typeID']]
             if self.item_info(typeid):
                 self.decryptor_category(typeid)
 
@@ -177,21 +174,6 @@ where r.requiredTypeID = t.typeID
     'waste': 4
 }
 
-# Query to retrieve all inventable items.
-g_inventable_all = {
-    'sql': '''
-select invTypes.typeID, invTypes.typeName, invGroups.categoryID
-from invTypes, invMetaTypes, invGroups
-where invTypes.typeID=invMetaTypes.typeID
-    and invMetaTypes.metaGroupId=2
-    and invGroups.groupID=invTypes.groupID
-    and invTypes.published=1
-order by invGroups.categoryID, invTypes.typeName''',
-    'typeID': 0,
-    'typeName': 1,
-    'categoryID': 2
-}
-
 # Query to retrieve all inventable items except rigs.
 g_inventable_no_rigs = {
     'sql': '''
@@ -201,6 +183,7 @@ where invTypes.typeID=invMetaTypes.typeID
     and invMetaTypes.metaGroupId=2
     and invGroups.groupID=invTypes.groupID
     and invTypes.published=1
+    and invGroups.categoryID in (%s)
     and invGroups.groupName not like "Rig%%"
 order by invGroups.categoryID, invTypes.typeName''',
     'typeID': 0,
@@ -209,7 +192,7 @@ order by invGroups.categoryID, invTypes.typeName''',
 }
 
 # Query to retrieve inventable items in a given category. Expects one category ID.
-g_inventable_category = {
+g_inventable_categories = {
     'sql': '''
 select invTypes.typeID, invTypes.typeName, invGroups.categoryID
 from invTypes, invMetaTypes, invGroups
@@ -217,7 +200,7 @@ where invTypes.typeID=invMetaTypes.typeID
     and invMetaTypes.metaGroupId=2
     and invGroups.groupID=invTypes.groupID
     and invTypes.published=1
-    and invGroups.categoryID=%s
+    and invGroups.categoryID in (%s)
 order by invGroups.categoryID, invTypes.typeName''',
     'typeID': 0,
     'typeName': 1,

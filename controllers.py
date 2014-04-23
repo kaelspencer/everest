@@ -266,38 +266,62 @@ def jump_station_ss(source, destination, highonly, nohigh):
     sysid_destination = sta_to_sysid(destination)
     return jump_ii(sysid_source, sysid_destination, highonly, nohigh)
 
-def industry(names=False, rigs=True, category=-1, detail=-1):
-    if not category in (-1, 6, 7, 8, 18, 22):
-        raise LookupError
+def industry(names=False, rigs=True, categories=[0], detail=-1):
+    for cat in categories:
+        if not cat in (0, 6, 7, 8, 18, 22):
+            raise LookupError
 
-    i = Industry(names=names, rigs=rigs, category=category, detail=detail)
+    i = Industry(names=names, rigs=rigs, categories=categories, detail=detail)
     items = i.fetch()
     return jsonify(items=items)
 
-@app.route('/industry/all/', defaults={'names': False})
-@app.route('/industry/all/names/', defaults={'names': True})
+@app.route('/industry/<int:category>/', defaults={'names': False, 'rigs': True})
+@app.route('/industry/<int:category>/names/', defaults={'names': True, 'rigs': True})
+@app.route('/industry/<int:category>/norigs/', defaults={'names': True, 'rigs': False})
+@app.route('/industry/<int:category>/names/norigs/', defaults={'names': True, 'rigs': False})
+@app.route('/industry/<int:category>/norigs/names/', defaults={'names': True, 'rigs': False})
 @handleLookupError
-def industry_all(names):
-    return industry(names=names)
+def industry_category(category, names, rigs):
+    return industry(category=[category], names=names, rigs=rigs)
 
-@app.route('/industry/norigs/', defaults={'names': False})
-@app.route('/industry/norigs/names/', defaults={'names': True})
-@handleLookupError
-def industry_norigs(names):
-    return industry(rigs=False, names=names)
-
-@app.route('/industry/<int:category>/', defaults={'names': False})
-@app.route('/industry/<int:category>/names/', defaults={'names': True})
-@handleLookupError
-def industry_category(category, names):
-    return industry(category=category, names=names)
-
-# TODO: Update this on client.
 @app.route('/industry/detail/<int:itemid>/', defaults={'names': False})
 @app.route('/industry/detail/<int:itemid>/names/', defaults={'names': True})
 @handleLookupError
 def industry_detail(itemid, names):
     return industry(detail=itemid, names=names)
+
+@app.route('/industry/', methods=['POST'])
+@handleLookupError
+def industry_post():
+    if not hasattr(request, 'json'):
+        print 'Aborting: request does not have json data.'
+        abort(400)
+    elif 'categories' not in request.json:
+        print 'Aborting: request does not have categories.'
+        abort(400)
+
+    rigs = True
+    categories = []
+    names = False
+
+    if 'rigs' in request.json:
+        rigs = request.json['rigs'] == True
+
+    if 'names' in request.json:
+        names = request.json['names'] == True
+
+    for cat in request.json['categories']:
+        if not cat in (0, 6, 7, 8, 18, 22):
+            raise LookupError
+
+        if cat == 0:
+            categories = [0]
+            break
+        else:
+            categories.append(cat)
+
+    print 'Categories: %s, Rigs: %s, Names: %s' % (categories, rigs, names)
+    return industry(categories=categories, rigs=rigs, names=names)
 
 @app.after_request
 @crossdomain(origin='*', headers=['Origin', 'X-Requested-With', 'Content-Type', 'Accept'])
