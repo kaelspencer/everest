@@ -6,13 +6,15 @@ class Industry():
         # This query gets inventable items. Categories is an array of category IDs. [0] is the
         # default and represents all categories. Expected categories: 6, 7, 8, 18, 22. If detail
         # is set it must be an itemid and that will be all the information that is returned.
+        if len(categories) == 1 and categories[0] == 0:
+            categories = [6, 7, 8, 18, 22]
+
         if detail != -1:
             self.inventable_items = [[detail]]
         elif rigs == False:
-            self.inventable_items = get_all(g_inventable_no_rigs['sql'], (','.join(map(str, categories))))
+            self.inventable_items = get_all(g_inventable_no_rigs['sql'] % ','.join(['%s'] * len(categories)), tuple(categories))
         else:
-            self.inventable_items = get_all(g_inventable_categories['sql'], (','.join(map(str, categories))))
-
+            self.inventable_items = get_all(g_inventable_categories['sql'] % ','.join(['%s'] * len(categories)), tuple(categories))
         self.items = dict()
         self.names = names
 
@@ -175,6 +177,9 @@ where r.requiredTypeID = t.typeID
 }
 
 # Query to retrieve all inventable items except rigs.
+# The wildcard on Rig needs to be double escaped. It's first formatted
+# to generate parameters depending on the length of the category array
+# and then again by the MySQL layer to inject the values.
 g_inventable_no_rigs = {
     'sql': '''
 select invTypes.typeID, invTypes.typeName, invGroups.categoryID
@@ -184,7 +189,7 @@ where invTypes.typeID=invMetaTypes.typeID
     and invGroups.groupID=invTypes.groupID
     and invTypes.published=1
     and invGroups.categoryID in (%s)
-    and invGroups.groupName not like "Rig%%"
+    and invGroups.groupName not like "Rig%%%%"
 order by invGroups.categoryID, invTypes.typeName''',
     'typeID': 0,
     'typeName': 1,

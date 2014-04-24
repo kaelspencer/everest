@@ -277,12 +277,12 @@ def industry(names=False, rigs=True, categories=[0], detail=-1):
 
 @app.route('/industry/<int:category>/', defaults={'names': False, 'rigs': True})
 @app.route('/industry/<int:category>/names/', defaults={'names': True, 'rigs': True})
-@app.route('/industry/<int:category>/norigs/', defaults={'names': True, 'rigs': False})
+@app.route('/industry/<int:category>/norigs/', defaults={'names': False, 'rigs': False})
 @app.route('/industry/<int:category>/names/norigs/', defaults={'names': True, 'rigs': False})
 @app.route('/industry/<int:category>/norigs/names/', defaults={'names': True, 'rigs': False})
 @handleLookupError
 def industry_category(category, names, rigs):
-    return industry(category=[category], names=names, rigs=rigs)
+    return industry(categories=[category], names=names, rigs=rigs)
 
 @app.route('/industry/detail/<int:itemid>/', defaults={'names': False})
 @app.route('/industry/detail/<int:itemid>/names/', defaults={'names': True})
