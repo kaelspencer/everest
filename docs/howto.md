@@ -100,18 +100,45 @@ A lot of data comes back as a result.
   * __wasteFactor__: Waste factor of the T2 BPC.
 
 ### Calling the API.
-There are three ways to get a list of inventable items. The first one is `/industry/all/`. This will return a list of all inventable items. `/industry/nogrigs/` will return all items that are not rigs. Lastly, `/industry/<categoryid>/` will return items in that category. These are the category options:
+There are two ways to get a list of inventable items.
+
+#### GET
+The first one is retrieving a single category (or all) `/industry/<categoryid>/`. This will return a list of all inventable items in that category. `/industry/<categoryid>/nogrigs/` will return all items in that category that are not rigs. This is only useful for modules and all; the other options won't return rigs anyway. These are the category options:
+  * __0__: All Inventable Items
   * __6__: Ships
   * __7__: Modules
   * __8__: Charges
   * __18__: Drones
   * __22__: Deployable
 
-These three URLs can be modified to return type names: `/industry/all/names/`, `/industry/norigs/names/`, and `/industry/<categoryid>/names/`.
+This URL can be modified to return type names as well. `/names/` can be mixed and matched with `/norigs/`. Possibilities:
+  * `/industry/<categoryid>/`
+  * `/industry/<categoryid>/names/`
+  * `/industry/<categoryid>/norigs/`
+  * `/industry/<categoryid>/names/norigs/`
+  * `/industry/<categoryid>/norigs/names/`
 
-To get detailed information about a specific item, pass in the T2 item id to the `/industry/detail/<itemid>/`. This can also have names: `/industry/detail/names/<itemid>/`. Here is a sample. Note that all `/industry/` APIs return a list with detail returning a single element list.
+#### POST
+The second option for calling the API allows you to retrieve items from multiple categories instead of single or all. `POST /industry/` with a valid request object. The request object supports three parameters:
+  * __categories__: Required. This is an array of ints. Each value must be in (0, 6, 7, 8, 18, 22). Passing in all (0) trumps other categories.
+  * __rigs__: Optional. A boolean that indicates whether rigs should be included in the result set.
+  * __names__: Optional. A boolean that indicates whether the results should have names.
 
-    GET /industry/detail/names/12735/
+
+    POST /industry/
+
+    {
+      "categories": [7, 18],
+      "rigs": false,
+      "names" true
+    }
+
+See the detail section for a sample result.
+
+### Item Detail
+To get detailed information about a specific item, pass in the T2 item id to the `/industry/detail/<itemid>/`. This can also have names: `/industry/detail/<itemid>/names/`. Here is a sample. Note that all `/industry/` APIs return a list with detail returning a single element list.
+
+    GET /industry/detail/12735/names/
 
     {
       "items": {
