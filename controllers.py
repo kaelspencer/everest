@@ -312,7 +312,8 @@ def industry_post():
         names = request.json['names'] == True
 
     for cat in request.json['categories']:
-        if not cat in (0, 6, 7, 8, 18, 22):
+        cat = int(cat)
+        if cat not in [0, 6, 7, 8, 18, 22]:
             raise LookupError
 
         if cat == 0:

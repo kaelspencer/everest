@@ -124,13 +124,14 @@ The second option for calling the API allows you to retrieve items from multiple
   * __rigs__: Optional. A boolean that indicates whether rigs should be included in the result set.
   * __names__: Optional. A boolean that indicates whether the results should have names.
 
+Here is a sample.
 
     POST /industry/
 
     {
       "categories": [7, 18],
       "rigs": false,
-      "names" true
+      "names": true
     }
 
 See the detail section for a sample result.
