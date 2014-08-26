@@ -325,6 +325,37 @@ def industry_post():
     print 'Categories: %s, Rigs: %s, Names: %s' % (categories, rigs, names)
     return industry(categories=categories, rigs=rigs, names=names)
 
+@app.route('/system/<int:system>/', methods=['GET'])
+@app.route('/system/<system>/', methods=['GET'])
+@handleLookupError
+def system_get(system):
+    return system_internal([system])
+
+def system_internal(systems):
+    results = []
+
+    for system in systems:
+        try:
+            sysid = location_lookup(system)
+        except LookupError:
+            print 'Did not find ' + system
+            results.append({ 'solarSystemID': system, 'message': 'Unable to locate this system.' })
+            continue
+
+        cache_key = 'system_' + str(sysid)
+        cv = cache.get(cache_key)
+        if cv is not None and False:
+            results.append({ 'destination': dest, 'jumps': cv })
+        else:
+            try:
+                result = get_system_info(sysid)
+                results.append(result)
+                cache.set(cache_key, result)
+            except LookupError:
+                results.append({ 'solarSystemID': system, 'message': 'Unable to locate this system.' })
+
+    return jsonify(systems=results)
+
 @app.after_request
 @crossdomain(origin='*', headers=['Origin', 'X-Requested-With', 'Content-Type', 'Accept'])
 def after_request(response):

@@ -1,5 +1,5 @@
 from app import app
-from db import get_one
+from db import get_one, try_execute
 
 # Convert a system name to a system ID.
 def sys_to_id(system):
@@ -23,6 +23,18 @@ def sysid_list_to_object(sysids):
         row = get_one('select solarSystemID, solarSystemName, round(security, 1) from mapSolarSystems where solarSystemID = %(system)s', { 'system': sysid })
         objs.append({ 'id': row[0], 'name': row[1], 'sec': row[2] })
     return objs
+
+def get_system_info(system):
+    sql = 'select regionID, constellationID, solarSystemID, solarSystemName, luminosity, border, fringe, corridor, hub, international, ' \
+        'regional, constellation, security, factionID, radius, sunTypeID, securityClass from mapSolarSystems where solarSystemId = %(system)s';
+    count, c = try_execute(sql, { 'system': system })
+    columns = [i[0] for i in c.description]
+
+    result = {}
+    for i, value in enumerate(c.fetchone()):
+        result[columns[i]] = value
+
+    return result
 
 # The source could be either a system or station. Turn it into a system ID.
 # A number passed in won't return an error. If it's not a station ID it's assumed to be a system ID.
