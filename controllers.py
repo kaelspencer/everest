@@ -331,6 +331,18 @@ def industry_post():
 def system_get(system):
     return system_internal([system])
 
+@app.route('/system/', methods=['POST'])
+@handleLookupError
+def system_post():
+    if not hasattr(request, 'json'):
+        print 'Aborting: request does not have json data.'
+        abort(400)
+    elif 'systems' not in request.json:
+        print 'Aborting: request does not have systems.'
+        abort(400)
+
+    return system_internal(request.json['systems'])
+
 def system_internal(systems):
     results = []
 
@@ -344,8 +356,8 @@ def system_internal(systems):
 
         cache_key = 'system_' + str(sysid)
         cv = cache.get(cache_key)
-        if cv is not None and False:
-            results.append({ 'destination': dest, 'jumps': cv })
+        if cv is not None:
+            results.append(cv)
         else:
             try:
                 result = get_system_info(sysid)
