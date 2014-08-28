@@ -42,7 +42,7 @@ def index():
         'route': 'GET /route/<from>/<to>/ for systems and /route/station/<from>/<to>/ for stations to get route information.',
         'jump': {
             'single': 'GET /jump/<from>/<to>/ for systems and /route/station/<from>/<to>/ for stations to get a jump count.',
-            'batch': 'POST /jump/batch/ with json data like this: {"source": "Jita", "destinations": ["Rens", "Ishisomo", 30002053]} to get batched jump counts.'
+            'batch': 'POST /jump/ (legacy: /jump/batch/) with json data like this: {"source": "Jita", "destinations": ["Rens", "Ishisomo", 30002053]} to get batched jump counts.'
         },
         'industry': 'GET /industry/<categoryid>/ to retrieve a list of information on all inventable items in that category. 0 represents all categories. See docs for details.',
         'system': {
@@ -53,6 +53,7 @@ def index():
     return jsonify(name='everest', github='https://github.com/kaelspencer/everest', author='Kael Spencer', usage=usage, docs='https://github.com/kaelspencer/everest/blob/master/docs/howto.md')
 
 @app.route('/jump/batch/', methods=['POST'])
+@app.route('/jump/', methods=['POST'])
 @handleLookupError
 def jump():
     if not hasattr(request, 'json'):
