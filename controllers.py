@@ -39,10 +39,16 @@ def cached(f):
 @cached
 def index():
     usage = {
-        'route': 'Use /route/<from>/<to>/ for systems and /route/station/<from>/<to>/ for stations to get route information.',
-        'jump': 'Use /jump/<from>/<to>/ for systems and /route/station/<from>/<to>/ for stations to get a jump count.',
-        'batch': 'Post to /jump/batch/ json data like this: {\'source\': \'Jita\', \'destinations\': [\'Rens\', \'Ishisomo\']} to get batched jump counts.',
-        'industry': 'GET /industry/<categoryid>/ to retrieve a list of information on all inventable items in that category. 0 represents all categories. See docs for details.'
+        'route': 'GET /route/<from>/<to>/ for systems and /route/station/<from>/<to>/ for stations to get route information.',
+        'jump': {
+            'single': 'GET /jump/<from>/<to>/ for systems and /route/station/<from>/<to>/ for stations to get a jump count.',
+            'batch': 'POST /jump/batch/ with json data like this: {"source": "Jita", "destinations": ["Rens", "Ishisomo", 30002053]} to get batched jump counts.'
+        },
+        'industry': 'GET /industry/<categoryid>/ to retrieve a list of information on all inventable items in that category. 0 represents all categories. See docs for details.',
+        'system': {
+            'single': 'GET /system/<system>/ to retrieve information on the system. Can be ID or name.',
+            'batch': 'POST /system/ with data {"systems": ["Jita", "Ishisomo", 30002053]}'
+        }
     }
     return jsonify(name='everest', github='https://github.com/kaelspencer/everest', author='Kael Spencer', usage=usage, docs='https://github.com/kaelspencer/everest/blob/master/docs/howto.md')
 
