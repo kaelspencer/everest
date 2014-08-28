@@ -1,6 +1,6 @@
 # Overview
 
-There are three API groups right now: `/route/`, `/jump/`, and `/industry/`.
+There are four API groups: `/route/`, `/jump/`, `/system/`, and `/industry/`.
 
 ## Route
 The route takes a source and destination and gives the shortest path between the two places. Route can take system names, system IDs, or any combination of the two.
@@ -62,6 +62,111 @@ The response to the request looks like this:
 
 #### Security Avoidance
 Batched jump counts also supports security avoidance. It has slightly different nomenclature than the GET requests. A top level key `avoidance` supports three options: `high`, `highonly`, and `none`. This key is optional and defaults to none. A value `high` is equivalent to `nohigh` in the GET requests where all of high sec is avoided. `highonly` is the same as GET and will return jump counts that stay in high sec. `none` disables the avoidance list.
+
+## System
+The data from the system table is exposed. The only thing omitted is the coordinates of the system.
+
+### Single System
+Sample of how to get a single system. You can provide either the system name or ID. It comes back in an array. This is consistent with the batched version.
+
+    GET /system/Tamo/
+
+    {
+      "systems": [
+        {
+          "border": 1,
+          "constellation": 0,
+          "constellationID": 20000211,
+          "corridor": 1,
+          "factionID": 500001,
+          "fringe": 0,
+          "hub": 0,
+          "international": 0,
+          "luminosity": 0.9325,
+          "radius": 3443867012512.0,
+          "regionID": 10000016,
+          "regional": 0,
+          "security": 0.338287,
+          "securityClass": "C1",
+          "solarSystemID": 30001437,
+          "solarSystemName": "Tamo",
+          "sunTypeID": 6
+        }
+      ]
+    }
+
+### Batched
+You can retrieve the data from multiple systems at once. This is a sample request.
+
+    POST /system/
+
+    {
+      "systems": [
+        "Jita",
+        "Ishisomo",
+        30002053
+      ]
+    }
+
+And the response:
+
+    {
+      "systems": [{
+          "border": 1,
+          "constellation": 0,
+          "constellationID": 20000020,
+          "corridor": 0,
+          "factionID": 500001,
+          "fringe": 0,
+          "hub": 1,
+          "international": 0,
+          "luminosity": 1.692,
+          "radius": 3591949026184.0,
+          "regionID": 10000002,
+          "regional": 1,
+          "security": 0.945913,
+          "securityClass": "B",
+          "solarSystemID": 30000142,
+          "solarSystemName": "Jita",
+          "sunTypeID": 3796
+      }, {
+          "border": 1,
+          "constellation": 0,
+          "constellationID": 20000024,
+          "corridor": 0,
+          "factionID": 500001,
+          "fringe": 0,
+          "hub": 1,
+          "international": 0,
+          "luminosity": 0.05446,
+          "radius": 2327688417392.0,
+          "regionID": 10000002,
+          "regional": 0,
+          "security": 0.650832,
+          "securityClass": "C",
+          "solarSystemID": 30000165,
+          "solarSystemName": "Ishisomo",
+          "sunTypeID": 7
+      }, {
+          "border": 1,
+          "constellation": 0,
+          "constellationID": 20000302,
+          "corridor": 0,
+          "factionID": 500002,
+          "fringe": 0,
+          "hub": 1,
+          "international": 0,
+          "luminosity": 0.2591,
+          "radius": 1703446994496.0,
+          "regionID": 10000042,
+          "regional": 1,
+          "security": 0.549668,
+          "securityClass": "D1",
+          "solarSystemID": 30002053,
+          "solarSystemName": "Hek",
+          "sunTypeID": 3799
+      }]
+    }
 
 ## Industry
 The industry API is used to fetch T2 blueprint details. There are two modes for retrieving these: getting all blueprints by category (or just all of them) and then pulling information for a specific item.
