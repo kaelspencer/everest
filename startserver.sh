@@ -9,5 +9,7 @@ if [ -f $PIDFILE ]; then
     rm -f -- $PIDFILE
 fi
 
+. ../virtualenv/everest/bin/activate
+
 export EVEREST_CONFIG=production.cfg
 exec uwsgi -s 127.0.0.1:49152 --module everest --callable app --daemonize /var/log/uwsgi/everest.log --pidfile $PIDFILE
